@@ -1,2 +1,5 @@
 build/
 {3931069465869402028}/
+.env
+.vscode/
+node_modules/
