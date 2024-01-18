@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #define ll long long
 using namespace std;
 
@@ -21,7 +22,13 @@ using namespace std;
 	string(1, 'a' + (7 - (sq % 8))) + string(1, '1' + (sq / 8))
 
 namespace BitboardHelper {
-void startingPos(unsigned ll bitboards[12]) {
+
+/**
+ * @brief sets bitboards to standard starting pos
+ *
+ * @param bitboards
+ */
+void startingPos(unsigned ll bitboards[12], unsigned ll colorBoards[2]) {
 	bitboards[pawnWhite] = 0xff00;
 	bitboards[pawnBlack] = 0xff000000000000;
 	bitboards[knightWhite] = 0x42;
@@ -34,9 +41,20 @@ void startingPos(unsigned ll bitboards[12]) {
 	bitboards[queenBlack] = 0x1000000000000000;
 	bitboards[kingWhite] = 0x8;
 	bitboards[kingBlack] = 0x800000000000000;
+	colorBoards[0] = 0xffff;
+	colorBoards[1] = 0xffff000000000000;
 }
 
-void movePiece(string move, bool color, unsigned ll bitboards[12]) {
+/**
+ * @brief move piece in standard piece bitboards
+ *
+ * @param move algebraic chess notation of piece movement (e.g. e2e4)
+ * @param color white = false, black = true
+ * @param bitboards output
+ * @param colorboards output
+ */
+void movePiece(string move, bool color, unsigned ll bitboards[12],
+			   unsigned ll colorboards[2]) {
 	int from = TO_SQUARE(move[0], move[1]);
 	int to = TO_SQUARE(move[2], move[3]);
 
@@ -57,22 +75,83 @@ void movePiece(string move, bool color, unsigned ll bitboards[12]) {
 		// rmv piece at to (oping color)
 		bitboards[i] &= ~toMask;
 	}
+
+	// move piece in color boards
+	colorboards[color] &= ~fromMask;
+	colorboards[color] |= toMask;
+	colorboards[!color] &= ~toMask;
+}
+
+/**
+ * @brief move piece in standard piece bitboards
+ *
+ * @param from int representing the square piece is on
+ * @param to int representing the square piece will move to
+ * @param color white = false, black = true
+ * @param bitboards output
+ * @param coloboards output
+ */
+void movePiece(int from, int to, bool color, unsigned ll bitboards[12],
+			   unsigned ll colorboards[2]) {
+
+	// white = false/evens, black = true/odds
+	unsigned ll fromMask = 1ULL << from;
+	unsigned ll toMask = 1ULL << to;
+	for (int i = color; i < 12; i += 2) {
+
+		// rmv piece at from, add piece at to (color that's moving)
+		if (bitboards[i] != (bitboards[i] & ~fromMask)) {
+			bitboards[i] &= ~fromMask;
+			bitboards[i] |= toMask;
+			break;
+		}
+	}
+	for (int i = !color; i < 12; i += 2) {
+
+		// rmv piece at to (oping color)
+		bitboards[i] &= ~toMask;
+	}
+
+	// move piece in color boards
+	colorboards[color] &= ~fromMask;
+	colorboards[color] |= toMask;
+	colorboards[!color] &= ~toMask;
+}
+
+void genKnightMoves(int pos, bool color, unsigned ll colorboards[2],
+					vector<int> &res) {
+	const int offsets[8] = {-17, -15, -10, -6, 6, 10, 15, 17};
+	for (int i = 0; i < 8; i++) {
+		unsigned ll newPos = pos + offsets[i];
+		if (newPos < 0 || newPos > 63) {
+			continue;
+		}
+		unsigned ll mask = 1 << newPos;
+		if (colorboards[color] & mask) {
+			continue;
+		}
+		res.push_back(newPos);
+	}
 }
 
 }; // namespace BitboardHelper
 
 int main() {
-	unsigned ll bitboards[12];
-	BitboardHelper::startingPos(bitboards);
+	unsigned ll pieceBoards[12], colorBoards[2], attackBoards[2];
+	BitboardHelper::startingPos(pieceBoards, colorBoards);
 
 	string move;
 	bool color = false;
-	cout << bitboards[pawnWhite] << endl;
-	while (cin >> move) {
-		BitboardHelper::movePiece(move, color, bitboards);
-		cout << bitboards[pawnWhite] << endl;
-		cout << bitboards[rookWhite] << endl;
+	cout << pieceBoards[pawnWhite] << endl;
+	while (true) {
+		cin >> move;
+		if (move == "exit") {
+			return 0;
+		}
+		BitboardHelper::movePiece(move, color, pieceBoards, colorBoards);
+		cout << pieceBoards[pawnWhite] << endl;
+		cout << pieceBoards[rookWhite] << endl;
 		color = !color;
 	}
-	return 0;
+	return 1;
 }
