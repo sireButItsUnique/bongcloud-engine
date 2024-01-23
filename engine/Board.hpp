@@ -1,3 +1,5 @@
+#pragma once
+#include "MoveGen.hpp"
 #include <iostream>
 #include <string>
 #include <utility>
