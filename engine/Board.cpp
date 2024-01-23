@@ -1,6 +1,8 @@
 #include "Board.hpp"
 
-Board::Board() { setStartingPos(); }
+Board::Board() {
+	setStartingPos();
+}
 
 void Board::setStartingPos() {
 	pieceBoards[pawnWhite] = 0xff00;
@@ -85,8 +87,7 @@ void Board::movePiece(int from, int to) {
 
 void Board::print(bool color) {
 	int i = 0;
-	for (int square = 63 * (!color); (color ? square < 64 : square >= 0);
-		 (color ? square++ : square--)) {
+	for (int square = 63 * (!color); (color ? square < 64 : square >= 0); (color ? square++ : square--)) {
 
 		// check if there's a piece
 		bool found = false;

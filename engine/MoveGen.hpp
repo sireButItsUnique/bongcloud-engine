@@ -1,9 +1,5 @@
 #pragma once
-#include <vector>
-using namespace std;
-
-#define Move pair<uint8_t, uint8_t>
-#define ll long long
+#include "includes.hpp"
 
 /**
  * @brief helper namespace for generating moves of each piece
