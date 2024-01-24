@@ -88,12 +88,13 @@ MoveGen::MoveGen() {
 	for (int i = 0; i < 64; i++) {
 		rookRays[i] = rayAttacks[i][NORTH] | rayAttacks[i][SOUTH] | rayAttacks[i][WEST] | rayAttacks[i][EAST];
 	}
-	cout << rookRays[63] << endl;
 
 	// bishop attacks
 	for (int i = 0; i < 64; i++) {
 		bishopRays[i] = rayAttacks[i][NORTHEAST] | rayAttacks[i][NORTHWEST] | rayAttacks[i][SOUTHEAST] | rayAttacks[i][SOUTHWEST];
+		bishopRays[i] &= 0x7e7e7e7e7e7e00;
 	}
+	cout << bishopRays[9] << endl;
 }
 
 void MoveGen::genKnightMoves(unsigned ll knight, unsigned ll friendlyPieces, vector<Move> &moves) {
