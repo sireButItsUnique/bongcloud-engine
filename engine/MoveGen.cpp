@@ -14,9 +14,9 @@ MoveGen::MoveGen() {
 	// east
 	unsigned ll ogEast = 0xffULL;
 	for (int col = 7; col >= 0; col--) {
-		unsigned ll east = ogEast - (1ULL << col);
 		ogEast -= (1ULL << col);
-		cout << "col " << col << " " << east << endl;
+		unsigned ll east = ogEast;
+
 		for (int row = 0; row < 8; row++) {
 			rayAttacks[row * 8 + col][EAST] = east;
 			east <<= 8;
@@ -37,15 +37,21 @@ MoveGen::MoveGen() {
 	// west
 	unsigned ll ogWest = 0xffULL;
 	for (int col = 0; col < 8; col++) {
-		unsigned ll west = ogWest - (1ULL << col);
 		ogWest -= (1ULL << col);
+		unsigned ll west = ogWest;
+
 		for (int row = 0; row < 8; row++) {
 			rayAttacks[row * 8 + col][WEST] = west;
 			west <<= 8;
 		}
 	}
-	cout << rayAttacks[10][WEST] << endl;
 	// north west
+
+	// rook attacks
+	for (int i = 0; i < 64; i++) {
+		rookRays[i] = rayAttacks[i][NORTH] | rayAttacks[i][SOUTH] | rayAttacks[i][WEST] | rayAttacks[i][EAST];
+	}
+	cout << rookRays[0];
 }
 
 void MoveGen::genKnightMoves(unsigned ll knight, unsigned ll friendlyPieces, vector<Move> &moves) {

@@ -14,6 +14,8 @@ public:
 	 * @param direction north starts at 0, numbers increase w/ clockwise rotation
 	 */
 	unsigned ll rayAttacks[64][8];
+	unsigned ll rookRays[64];
+	unsigned ll bishopRays[64];
 
 	/**
 	 * @brief initializes ray attacks
