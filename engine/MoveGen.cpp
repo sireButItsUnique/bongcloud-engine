@@ -177,3 +177,25 @@ void MoveGen::genRookMoves(unsigned ll rook, unsigned ll friendlyPieces, unsigne
 		rook &= ~(1ULL << to);
 	}
 }
+
+void MoveGen::genQueenMoves(unsigned ll queen, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
+
+	// gen rays
+	uint8_t from = _tzcnt_u64(queen);
+	unsigned ll rookBlockers = rookRays[from];
+	unsigned ll bishopBlockers = bishopRays[from];
+
+	// gen relevant bits + lookup
+	rookBlockers = _pext_u64(friendlyPieces | enemyPieces, rookBlockers);
+	bishopBlockers = _pext_u64(friendlyPieces | enemyPieces, bishopBlockers);
+	queen = rookLookup[rookLookupOffsets[from] + rookBlockers];
+	queen |= bishopLookup[bishopLookupOffsets[from] + bishopBlockers];
+	queen &= ~friendlyPieces;
+
+	// iterate over end positions
+	while (queen) {
+		uint8_t to = _tzcnt_u64(queen);
+		moves.push_back({from, to});
+		queen &= ~(1ULL << to);
+	}
+}
