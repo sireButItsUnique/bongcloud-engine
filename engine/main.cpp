@@ -8,10 +8,10 @@ int main() {
 	string input;
 	Board *board = new Board();
 	board->print(false);
-	unsigned ll tmp = 0;
+
 	vector<Move> moves;
 	MoveGen *moveGen = new MoveGen();
-	moveGen->genKingMoves(128, tmp, moves);
+	moveGen->genBishopMoves(0x800000000, 128, 0, moves);
 	// for (int i = 0; i < moves.size(); i++) {
 	// 	cout << TO_ALGEBRA(moves[i].first) << TO_ALGEBRA(moves[i].second) << endl;
 	// }

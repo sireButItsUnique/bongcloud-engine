@@ -3,8 +3,9 @@
 MoveGen::MoveGen() {
 
 	// north
-	unsigned ll north = 0x0101010101010100ULL;
+	unsigned ll north = 0x101010101010100ULL;
 	for (int square = 0; square < 64; square++) {
+		north &= 0xffffffffffffff;
 		rayAttacks[square][NORTH] = north;
 		north <<= 1;
 	}
@@ -23,6 +24,7 @@ MoveGen::MoveGen() {
 	unsigned ll ogEast = 0xffULL;
 	for (int col = 7; col >= 0; col--) {
 		ogEast -= (1ULL << col);
+		ogEast &= 0xfefefefefefefefe;
 		unsigned ll east = ogEast;
 
 		for (int row = 0; row < 8; row++) {
@@ -44,6 +46,7 @@ MoveGen::MoveGen() {
 	// south
 	unsigned ll south = 0x0080808080808080ULL;
 	for (int square = 63; square >= 0; square--) {
+		south &= 0xffffffffffffff00;
 		rayAttacks[square][SOUTH] = south;
 		south >>= 1;
 	}
@@ -62,6 +65,7 @@ MoveGen::MoveGen() {
 	unsigned ll ogWest = 0xffULL;
 	for (int col = 0; col < 8; col++) {
 		ogWest -= (1ULL << col);
+		ogWest &= 0x7f7f7f7f7f7f7f7f;
 		unsigned ll west = ogWest;
 
 		for (int row = 0; row < 8; row++) {
@@ -84,12 +88,12 @@ MoveGen::MoveGen() {
 	for (int i = 0; i < 64; i++) {
 		rookRays[i] = rayAttacks[i][NORTH] | rayAttacks[i][SOUTH] | rayAttacks[i][WEST] | rayAttacks[i][EAST];
 	}
+	cout << rookRays[63] << endl;
 
 	// bishop attacks
 	for (int i = 0; i < 64; i++) {
 		bishopRays[i] = rayAttacks[i][NORTHEAST] | rayAttacks[i][NORTHWEST] | rayAttacks[i][SOUTHEAST] | rayAttacks[i][SOUTHWEST];
 	}
-	cout << bishopRays[35];
 }
 
 void MoveGen::genKnightMoves(unsigned ll knight, unsigned ll friendlyPieces, vector<Move> &moves) {
@@ -128,4 +132,13 @@ void MoveGen::genKingMoves(unsigned ll king, unsigned ll friendlyPieces, vector<
 void MoveGen::genBishopMoves(unsigned ll bishop, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
 
 	// gen rays
+	uint8_t from = _tzcnt_u64(bishop);
+	bishop = bishopRays[from];
+
+	auto res = _pext_u64(friendlyPieces | enemyPieces, bishop);
+	cout << "mask: " << bishop << endl;
+	cout << "blockers: " << (friendlyPieces | enemyPieces) << endl;
+	cout << "pext: " << res << endl;
+
+	// do magic bitboard thing
 }
