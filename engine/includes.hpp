@@ -19,5 +19,16 @@ using namespace std;
 #define queenBlack 9
 #define kingWhite 10
 #define kingBlack 11
+#define NORTH 0
+#define NORTHEAST 1
+#define EAST 2
+#define SOUTHEAST 3
+#define SOUTH 4
+#define SOUTHWEST 5
+#define WEST 6
+#define NORTHWEST 7
 #define Move pair<uint8_t, uint8_t>
 #define ll long long
+
+#define TO_SQUARE(col, row) 8 * (row - '1') + 7 - (col - 'a')
+#define TO_ALGEBRA(sq) string(1, 'a' + (7 - (sq % 8))) + string(1, '1' + (sq / 8))

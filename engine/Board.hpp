@@ -2,12 +2,8 @@
 #include "MoveGen.hpp"
 #include "includes.hpp"
 
-#define TO_SQUARE(col, row) 8 * (row - '1') + 7 - (col - 'a')
-#define TO_ALGEBRA(sq)                                                         \
-	string(1, 'a' + (7 - (sq % 8))) + string(1, '1' + (sq / 8))
-
 class Board {
-  public:
+public:
 	unsigned ll pieceBoards[12], colorBoards[2], attackBoards[2];
 	bool whiteQueenCastle, whiteKingCastle, blackQueenCastle, blackKingCastle;
 	bool turn;

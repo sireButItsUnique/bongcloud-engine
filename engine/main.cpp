@@ -8,14 +8,19 @@ int main() {
 	string input;
 	Board *board = new Board();
 	board->print(false);
-	unsigned ll tmp[12];
+	unsigned ll tmp = 0;
 	vector<Move> moves;
-	MoveGen::genKnightMoves(0, tmp, moves);
+	MoveGen *moveGen = new MoveGen();
+	moveGen->genKingMoves(128, tmp, moves);
+	// for (int i = 0; i < moves.size(); i++) {
+	// 	cout << TO_ALGEBRA(moves[i].first) << TO_ALGEBRA(moves[i].second) << endl;
+	// }
 
-	while (input != "quit") {
-		cin >> input;
-		board->movePiece(input);
-		board->print(false);
-	}
+	// cin >> input;
+	// while (input != "quit") {
+	// 	board->movePiece(input);
+	// 	board->print(false);
+	// 	cin >> input;
+	// }
 	return 0;
 }
