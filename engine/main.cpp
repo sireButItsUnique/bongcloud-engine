@@ -11,7 +11,7 @@ int main() {
 
 	vector<Move> moves;
 	MoveGen *moveGen = new MoveGen();
-	moveGen->genBishopMoves(0x800000000, 128, 0, moves);
+	moveGen->genBishopMoves(68719476736, 0, 0, moves);
 	// for (int i = 0; i < moves.size(); i++) {
 	// 	cout << TO_ALGEBRA(moves[i].first) << TO_ALGEBRA(moves[i].second) << endl;
 	// }

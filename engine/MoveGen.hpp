@@ -17,11 +17,23 @@ public:
 	unsigned ll rookRays[64];
 	unsigned ll bishopRays[64];
 
+	unsigned ll rookLookupOffsets[64];
+	unsigned ll bishopLookupOffsets[64];
+
+	unsigned ll *rookLookup;
+	unsigned ll *bishopLookup;
+
+	/**
+	 * @brief precomputes all sliding piece moves
+	 *
+	 */
+	MoveGen();
+
 	/**
 	 * @brief initializes ray attacks
 	 *
 	 */
-	MoveGen();
+	void initializeRays();
 
 	/**
 	 * @brief generates knight moves

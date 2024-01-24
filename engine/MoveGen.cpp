@@ -1,7 +1,10 @@
 #include "MoveGen.hpp"
 
 MoveGen::MoveGen() {
+	initializeRays();
+}
 
+void MoveGen::initializeRays() {
 	// north
 	unsigned ll north = 0x101010101010100ULL;
 	for (int square = 0; square < 64; square++) {
@@ -88,13 +91,20 @@ MoveGen::MoveGen() {
 	for (int i = 0; i < 64; i++) {
 		rookRays[i] = rayAttacks[i][NORTH] | rayAttacks[i][SOUTH] | rayAttacks[i][WEST] | rayAttacks[i][EAST];
 	}
+	rookLookupOffsets[0] = 0;
+	for (int i = 1; i < 64; i++) {
+		rookLookupOffsets[i] = rookLookupOffsets[i - 1] + (1ULL << __popcnt64(rookRays[i - 1]));
+	}
 
 	// bishop attacks
 	for (int i = 0; i < 64; i++) {
 		bishopRays[i] = rayAttacks[i][NORTHEAST] | rayAttacks[i][NORTHWEST] | rayAttacks[i][SOUTHEAST] | rayAttacks[i][SOUTHWEST];
 		bishopRays[i] &= 0x7e7e7e7e7e7e00;
 	}
-	cout << bishopRays[9] << endl;
+	bishopLookupOffsets[0] = 0;
+	for (int i = 1; i < 64; i++) {
+		bishopLookupOffsets[i] = bishopLookupOffsets[i - 1] + (1ULL << __popcnt64(bishopRays[i - 1]));
+	}
 }
 
 void MoveGen::genKnightMoves(unsigned ll knight, unsigned ll friendlyPieces, vector<Move> &moves) {
@@ -136,10 +146,34 @@ void MoveGen::genBishopMoves(unsigned ll bishop, unsigned ll friendlyPieces, uns
 	uint8_t from = _tzcnt_u64(bishop);
 	bishop = bishopRays[from];
 
-	auto res = _pext_u64(friendlyPieces | enemyPieces, bishop);
-	cout << "mask: " << bishop << endl;
-	cout << "blockers: " << (friendlyPieces | enemyPieces) << endl;
-	cout << "pext: " << res << endl;
+	// gen relevant bits + lookup
+	unsigned ll blockers = _pext_u64(friendlyPieces | enemyPieces, bishop);
+	bishop = bishopLookup[bishopLookupOffsets[from] + blockers];
+	bishop &= ~friendlyPieces;
 
-	// do magic bitboard thing
+	// iterate over end positions
+	while (bishop) {
+		uint8_t to = _tzcnt_u64(bishop);
+		moves.push_back({from, to});
+		bishop &= ~(1ULL << to);
+	}
+}
+
+void MoveGen::genRookMoves(unsigned ll rook, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
+
+	// gen rays
+	uint8_t from = _tzcnt_u64(rook);
+	rook = rookRays[from];
+
+	// gen relevant bits + lookup
+	unsigned ll blockers = _pext_u64(friendlyPieces | enemyPieces, rook);
+	rook = rookLookup[rookLookupOffsets[from] + blockers];
+	rook &= ~friendlyPieces;
+
+	// iterate over end positions
+	while (rook) {
+		uint8_t to = _tzcnt_u64(rook);
+		moves.push_back({from, to});
+		rook &= ~(1ULL << to);
+	}
 }
