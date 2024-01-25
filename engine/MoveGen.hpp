@@ -20,8 +20,8 @@ public:
 	unsigned ll rookLookupOffsets[64];
 	unsigned ll bishopLookupOffsets[64];
 
-	unsigned ll *rookLookup;
-	unsigned ll *bishopLookup;
+	unsigned ll rookLookup[102400];
+	unsigned ll bishopLookup[5247];
 
 	/**
 	 * @brief precomputes all sliding piece moves
@@ -34,6 +34,18 @@ public:
 	 *
 	 */
 	void initializeRays();
+
+	/**
+	 * @brief initializes rook lookup array
+	 *
+	 */
+	void initializeRookLookup();
+
+	/**
+	 * @brief initializes rook lookup array
+	 *
+	 */
+	void initializeBishopLookup();
 
 	/**
 	 * @brief generates knight moves
