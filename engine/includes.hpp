@@ -29,7 +29,6 @@ using namespace std;
 #define SOUTHWEST 5
 #define WEST 6
 #define NORTHWEST 7
-#define Move pair<uint8_t, uint8_t>
 #define ll long long
 
 #define TO_SQUARE(col, row) 8 * (row - '1') + 7 - (col - 'a')

@@ -1,4 +1,5 @@
 #pragma once
+#include "Move.hpp"
 #include "MoveGen.hpp"
 #include "includes.hpp"
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "Move.hpp"
 #include "SlideAttacks.hpp"
 #include "includes.hpp"
 
@@ -97,11 +98,13 @@ public:
 	void genQueenMoves(unsigned ll, unsigned ll, unsigned ll, vector<Move> &);
 
 	/**
-	 * @brief generates pawn moves
+	 * @brief generates pawn moves, ignoring en passsant for now
 	 *
 	 * @param pawn pieceboard representing the position of the pawn
-	 * @param pieceBoards pieceboards
+	 * @param color color of pawn, white = false; black = true
+	 * @param friendlyPieces pieceboard representing all friendly pieces
+	 * @param enemyPieces pieceboard representing all enemy pieces
 	 * @param moves resulting moves
 	 */
-	void genPawnMoves(unsigned ll, unsigned ll[12], vector<Move> &);
+	void genPawnMoves(unsigned ll, bool, unsigned ll, unsigned ll, vector<Move> &);
 };

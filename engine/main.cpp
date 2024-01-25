@@ -12,7 +12,7 @@ int main() {
 	vector<Move> moves;
 	MoveGen *moveGen = new MoveGen();
 	// moveGen->genRookMoves(134217728, 2357456042721280, 0, moves);
-	moveGen->genBishopMoves(134217728, 0, 9205038779837963710, moves);
+	moveGen->genPawnMoves(4294967296, true, 0, 2181038080, moves);
 
 	// for (int i = 0; i < moves.size(); i++) {
 	// 	cout << TO_ALGEBRA(moves[i].first) << TO_ALGEBRA(moves[i].second) << endl;

@@ -169,7 +169,7 @@ void MoveGen::genKnightMoves(unsigned ll knight, unsigned ll friendlyPieces, vec
 	// iterate over end positions
 	while (knight) {
 		uint8_t to = _tzcnt_u64(knight);
-		moves.push_back({from, to});
+		moves.push_back(Move(from, to));
 		knight &= ~(1ULL << to);
 	}
 }
@@ -185,7 +185,7 @@ void MoveGen::genKingMoves(unsigned ll king, unsigned ll friendlyPieces, vector<
 	// iterate over end positions
 	while (king) {
 		uint8_t to = _tzcnt_u64(king);
-		moves.push_back({from, to});
+		moves.push_back(Move(from, to));
 		king &= ~(1ULL << to);
 	}
 }
@@ -208,7 +208,7 @@ void MoveGen::genBishopMoves(unsigned ll bishop, unsigned ll friendlyPieces, uns
 	// iterate over end positions
 	while (bishop) {
 		uint8_t to = _tzcnt_u64(bishop);
-		moves.push_back({from, to});
+		moves.push_back(Move(from, to));
 		bishop &= ~(1ULL << to);
 	}
 }
@@ -232,7 +232,7 @@ void MoveGen::genRookMoves(unsigned ll rook, unsigned ll friendlyPieces, unsigne
 	// iterate over end positions
 	while (rook) {
 		uint8_t to = _tzcnt_u64(rook);
-		moves.push_back({from, to});
+		moves.push_back(Move(from, to));
 		rook &= ~(1ULL << to);
 	}
 }
@@ -254,7 +254,53 @@ void MoveGen::genQueenMoves(unsigned ll queen, unsigned ll friendlyPieces, unsig
 	// iterate over end positions
 	while (queen) {
 		uint8_t to = _tzcnt_u64(queen);
-		moves.push_back({from, to});
+		moves.push_back(Move(from, to));
 		queen &= ~(1ULL << to);
+	}
+}
+
+void MoveGen::genPawnMoves(unsigned ll pawn, bool color, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
+
+	// mask pawn
+	uint8_t from = _tzcnt_u64(pawn);
+
+	// pushes
+	if (color) {
+		pawn >>= 8;
+		pawn &= ~(friendlyPieces | enemyPieces);
+		if (pawn & 0xff0000000000) {
+			pawn |= (pawn >> 8);
+			pawn &= ~(friendlyPieces | enemyPieces);
+		}
+	} else {
+		pawn <<= 8;
+		pawn &= ~(friendlyPieces | enemyPieces);
+		if (pawn & 0xff0000) {
+			pawn |= (pawn << 8);
+			pawn &= ~(friendlyPieces | enemyPieces);
+		}
+	}
+
+	// captures
+	if (color) {
+		pawn |= (((1ULL << from) >> 9) & 0x7f7f7f7f7f7f7f7f & enemyPieces);
+		pawn |= (((1ULL << from) >> 7) & 0xfefefefefefefefe & enemyPieces);
+	} else {
+		pawn |= (((1ULL << from) << 9) & 0xfefefefefefefefe & enemyPieces);
+		pawn |= (((1ULL << from) << 7) & 0x7f7f7f7f7f7f7f7f & enemyPieces);
+	}
+	cout << "PAWN: " << pawn << endl;
+
+	// iterate over end positions
+	while (pawn) {
+		uint8_t to = _tzcnt_u64(pawn);
+		if (to >= 56 || to <= 7) {
+			moves.push_back(Move(from, to, true));
+			moves.push_back(Move(from, to, false));
+		} else {
+			moves.push_back(Move(from, to));
+		}
+
+		pawn &= ~(1ULL << to);
 	}
 }
