@@ -1,8 +1,10 @@
 #pragma once
 #include <intrin.h>
+#include <iomanip>
 #include <iostream>
 #include <stdint.h>
 #include <string>
+#include <time.h>
 #include <utility>
 #include <vector>
 using namespace std;

@@ -1,4 +1,5 @@
 #pragma once
+#include "SlideAttacks.hpp"
 #include "includes.hpp"
 
 /**
@@ -21,7 +22,7 @@ public:
 	unsigned ll bishopLookupOffsets[64];
 
 	unsigned ll rookLookup[102400];
-	unsigned ll bishopLookup[5247];
+	unsigned ll bishopLookup[5248];
 
 	/**
 	 * @brief precomputes all sliding piece moves
