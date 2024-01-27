@@ -3,8 +3,20 @@
 #include "SlideAttacks.hpp"
 #include "includes.hpp"
 
+// LEGAL MOVE CONSIDERATIONS:
+/*
+the king is attacked:
+	-move the king to where it isnt
+	-if under attack by a sliding piece, pin urself
+	-discard all other moves
+
+the king is not attacked:
+	-discard moving king into attack
+	-discard moving pinned piece
+*/
+
 /**
- * @brief helper class for generating moves of each piece
+ * @brief helper class for generating moves of each piece, currently only pseudo legal
  *
  */
 class MoveGen {
@@ -133,4 +145,63 @@ public:
 	 * @param moves resulting moves
 	 */
 	void genCastleMoves(bool, bool, unsigned ll, unsigned ll, unsigned ll, vector<Move> &);
+
+	/**
+	 * @brief generates knight moves
+	 *
+	 * @param knight pieceboard representing the position of the knight
+	 * @param friendlyPieces pieceboard representing all friendly pieces
+	 * @param attackBoard resulting attack board
+	 */
+	void genKnightMovesA(unsigned ll, unsigned ll, unsigned ll &);
+
+	/**
+	 * @brief generates king moves
+	 *
+	 * @param king pieceboard representing the position of the king
+	 * @param friendlyPieces pieceboard representing all friendly pieces
+	 * @param attackBoard resulting attack board
+	 */
+	void genKingMovesA(unsigned ll, unsigned ll, unsigned ll &);
+
+	/**
+	 * @brief generates bishop moves
+	 *
+	 * @param bishop pieceboard representing the position of the bishop
+	 * @param friendlyPieces pieceboard representing all friendly pieces
+	 * @param enemyPieces pieceboard representing all enemy pieces
+	 * @param attackBoard resulting attack board
+	 */
+	void genBishopMovesA(unsigned ll, unsigned ll, unsigned ll, unsigned ll &);
+
+	/**
+	 * @brief generates rook moves
+	 *
+	 * @param rook pieceboard representing the position of the rook
+	 * @param friendlyPieces pieceboard representing all friendly pieces
+	 * @param enemyPieces pieceboard representing all enemy pieces
+	 * @param attackBoard resulting attack board
+	 */
+	void genRookMovesA(unsigned ll, unsigned ll, unsigned ll, unsigned ll &);
+
+	/**
+	 * @brief generates queen moves
+	 *
+	 * @param queen pieceboard representing the position of the queen
+	 * @param friendlyPieces pieceboard representing all friendly pieces
+	 * @param enemyPieces pieceboard representing all enemy pieces
+	 * @param attackBoard resulting attack board
+	 */
+	void genQueenMovesA(unsigned ll, unsigned ll, unsigned ll, unsigned ll &);
+
+	/**
+	 * @brief generates pawn moves, ignoring en passsant for now
+	 *
+	 * @param pawn pieceboard representing the position of the pawn
+	 * @param color color of pawn, white = false; black = true
+	 * @param friendlyPieces pieceboard representing all friendly pieces
+	 * @param enemyPieces pieceboard representing all enemy pieces
+	 * @param attackBoard resulting attack board
+	 */
+	void genPawnMovesA(unsigned ll, bool, unsigned ll, unsigned ll, unsigned ll &);
 };

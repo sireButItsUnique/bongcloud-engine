@@ -36,14 +36,23 @@ public:
 	void movePiece(int, int);
 
 	/**
+	 * @brief
+	 *
+	 * @param color bool representing the color to generate attack board for, white = false; black = true
+	 * @param moveGen helper class used to generate pseudo legal moves (and in this case attacks)
+	 */
+	void genAttackBoard(bool, MoveGen);
+
+	/**
 	 * @brief generates all possible moves for the current board
 	 *
+	 * @param moveGen helper class used to generate pseudo legal moves
 	 */
-	void genMoves();
+	void genMoves(MoveGen *);
 
 	/**
 	 * @brief debug only, prints the board
 	 *
 	 */
-	void print(bool = true);
+	void print(string = "white");
 };

@@ -19,7 +19,7 @@ public:
 	 * @param to to square
 	 * @param piece piece to promote to, queen = false; knight = true
 	 */
-	constexpr Move(int, int, bool);
+	Move(int, int, bool);
 
 	/**
 	 * @brief constructor for castle move
@@ -27,14 +27,7 @@ public:
 	 * @param color color that is castling, white = false; black = true
 	 * @param side which side castling occurs, kingside = false; queenside = true
 	 */
-	constexpr Move(bool, bool);
-
-	/**
-	 * @brief constructor with raw data
-	 *
-	 * @param data raw 16 bit data
-	 */
-	constexpr Move(uint16_t);
+	Move(bool, bool);
 
 	/**
 	 * @brief constructor for basic move
@@ -42,21 +35,28 @@ public:
 	 * @param from from square
 	 * @param to to square
 	 */
-	constexpr Move(int, int);
+	Move(int, int);
+
+	/**
+	 * @brief constructor with raw data
+	 *
+	 * @param data raw 16 bit data
+	 */
+	Move(uint16_t);
 
 	/**
 	 * @brief returns the square the piece came from
 	 *
-	 * @return constexpr uint8_t
+	 * @return uint8_t
 	 */
-	constexpr uint8_t from();
+	uint8_t from();
 
 	/**
 	 * @brief returns the square the piece moved to
 	 *
-	 * @return constexpr uint8_t
+	 * @return uint8_t
 	 */
-	constexpr uint8_t to();
+	uint8_t to();
 
 	/**
 	 * @brief returns whether or not the move has a promotion flag
@@ -64,7 +64,7 @@ public:
 	 * @return true
 	 * @return false
 	 */
-	constexpr bool isPromotion();
+	bool isPromotion();
 
 	/**
 	 * @brief returns which piece the pawn promoted to during the move
@@ -72,7 +72,7 @@ public:
 	 * @return true = knight
 	 * @return false = queen
 	 */
-	constexpr bool promotionPiece();
+	bool promotionPiece();
 
 	/**
 	 * @brief returns whether or not the move has a castle flag
@@ -80,5 +80,5 @@ public:
 	 * @return true
 	 * @return false
 	 */
-	constexpr bool isCastle();
+	bool isCastle();
 };

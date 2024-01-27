@@ -1,16 +1,14 @@
 #include "Move.hpp"
 
-constexpr Move::Move(uint16_t data) {
-	this->data = data;
-}
-
-constexpr Move::Move(int from, int to) {
+Move::Move(bool color, bool side) {
 	data = 0;
-	data |= to;
-	data |= (from << 6);
+	if (color)
+		data |= 0x2000;
+	if (side)
+		data |= 0x1000;
 }
 
-constexpr Move::Move(int from, int to, bool piece) {
+Move::Move(int from, int to, bool piece) {
 	data = 0;
 	data |= to;
 	data |= (from << 6);
@@ -18,18 +16,32 @@ constexpr Move::Move(int from, int to, bool piece) {
 	data |= 0x8000;
 }
 
-constexpr uint8_t Move::from() {
+Move::Move(int from, int to) {
+	data = 0;
+	data |= to;
+	data |= (from << 6);
+}
+
+Move::Move(uint16_t data) {
+	this->data = data;
+}
+
+uint8_t Move::from() {
 	return ((data >> 6) & 0x3f);
 }
 
-constexpr uint8_t Move::to() {
+uint8_t Move::to() {
 	return (data & 0x3f);
 }
 
-constexpr bool Move::isPromotion() {
+bool Move::isPromotion() {
 	return (data & 0x8000);
 }
 
-constexpr bool Move::promotionPiece() {
+bool Move::promotionPiece() {
 	return (data & 0x4000);
+}
+
+bool Move::isCastle() {
+	return (this->from() == this->to());
 }

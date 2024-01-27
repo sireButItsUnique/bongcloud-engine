@@ -85,9 +85,23 @@ void Board::movePiece(int from, int to) {
 	turn = !turn;
 }
 
-void Board::print(bool color) {
+void Board::genMoves(MoveGen *moveGen) {
+	moves.clear();
+
+	// black moves
+	if (turn) {
+
+	}
+
+	// white moves
+	else {
+	}
+}
+
+void Board::print(string color) {
 	int i = 0;
-	for (int square = 63 * (!color); (color ? square < 64 : square >= 0); (color ? square++ : square--)) {
+	bool c = (color == "black");
+	for (int square = 63 * (!c); (c ? square < 64 : square >= 0); (c ? square++ : square--)) {
 
 		// check if there's a piece
 		bool found = false;

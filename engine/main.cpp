@@ -7,22 +7,15 @@ using namespace std;
 int main() {
 	string input;
 	Board *board = new Board();
-	board->print(false);
 
 	vector<Move> moves;
 	MoveGen *moveGen = new MoveGen();
-	// moveGen->genRookMoves(134217728, 2357456042721280, 0, moves);
-	moveGen->genPawnMoves(4294967296, true, 0, 2181038080, moves);
 
-	// for (int i = 0; i < moves.size(); i++) {
-	// 	cout << TO_ALGEBRA(moves[i].first) << TO_ALGEBRA(moves[i].second) << endl;
-	// }
-
-	// cin >> input;
-	// while (input != "quit") {
-	// 	board->movePiece(input);
-	// 	board->print(false);
-	// 	cin >> input;
-	// }
+	cin >> input;
+	while (input != "quit") {
+		board->movePiece(input);
+		board->print("white");
+		cin >> input;
+	}
 	return 0;
 }
