@@ -24,6 +24,8 @@ public:
 
 	unsigned ll rookLookup[102400];
 	unsigned ll bishopLookup[5248];
+	unsigned ll knightLookup[64];
+	unsigned ll kingLookup[64];
 
 	/**
 	 * @brief precomputes all sliding piece moves
@@ -48,6 +50,18 @@ public:
 	 *
 	 */
 	void initializeBishopLookup();
+
+	/**
+	 * @brief initializes knight lookup array
+	 *
+	 */
+	void initializeKnightLookup();
+
+	/**
+	 * @brief initializes king lookup array
+	 *
+	 */
+	void initializeKingLookup();
 
 	/**
 	 * @brief generates knight moves

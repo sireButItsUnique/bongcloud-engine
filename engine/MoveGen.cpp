@@ -7,6 +7,8 @@ MoveGen::MoveGen() {
 	initializeRays();
 	initializeRookLookup();
 	initializeBishopLookup();
+	initializeKnightLookup();
+	initializeKingLookup();
 
 	time(&end);
 	double time_taken = double(end - start);
@@ -157,13 +159,31 @@ void MoveGen::initializeBishopLookup() {
 	}
 }
 
+void MoveGen::initializeKnightLookup() {
+
+	for (int square = 0; square < 64; square++) {
+		unsigned ll knightPos = (1ULL << square);
+		unsigned ll horizontal1 = ((knightPos << 1) & 0xfefefefefefefefe) | ((knightPos >> 1) & 0x7f7f7f7f7f7f7f7f);
+		unsigned ll horizontal2 = ((knightPos << 2) & 0xfcfcfcfcfcfcfcfc) | ((knightPos >> 2) & 0x3f3f3f3f3f3f3f3f);
+		knightLookup[square] = (horizontal2 << 8) | (horizontal2 >> 8) | (horizontal1 << 16) | (horizontal1 >> 16);
+	}
+}
+
+void MoveGen::initializeKingLookup() {
+
+	for (int square = 0; square < 64; square++) {
+		unsigned ll kingPos = (1ULL << square);
+		kingPos |= ((kingPos << 1) & 0xfefefefefefefefe) | ((kingPos >> 1) & 0x7f7f7f7f7f7f7f7f);
+		kingPos |= (kingPos << 8) | (kingPos >> 8);
+		kingLookup[square] = kingPos & ~(1ULL << square);
+	}
+}
+
 void MoveGen::genKnightMoves(unsigned ll knight, unsigned ll friendlyPieces, vector<Move> &moves) {
 
-	// mask knight
+	// get lookup
 	uint8_t from = _tzcnt_u64(knight);
-	unsigned ll horizontal1 = ((knight << 1) & 0xfefefefefefefefe) | ((knight >> 1) & 0x7f7f7f7f7f7f7f7f);
-	unsigned ll horizontal2 = ((knight << 2) & 0xfcfcfcfcfcfcfcfc) | ((knight >> 2) & 0x3f3f3f3f3f3f3f3f);
-	knight = (horizontal2 << 8) | (horizontal2 >> 8) | (horizontal1 << 16) | (horizontal1 >> 16);
+	knight = knightLookup[from];
 	knight &= ~friendlyPieces;
 
 	// iterate over end positions
@@ -176,10 +196,9 @@ void MoveGen::genKnightMoves(unsigned ll knight, unsigned ll friendlyPieces, vec
 
 void MoveGen::genKingMoves(unsigned ll king, unsigned ll friendlyPieces, vector<Move> &moves) {
 
-	// mask king
+	// get lookup
 	uint8_t from = _tzcnt_u64(king);
-	king |= ((king << 1) & 0xfefefefefefefefe) | ((king >> 1) & 0x7f7f7f7f7f7f7f7f);
-	king |= (king << 8) | (king >> 8);
+	king = kingLookup[from];
 	king &= ~friendlyPieces;
 
 	// iterate over end positions

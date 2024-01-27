@@ -17,9 +17,7 @@ public:
 	 *
 	 * @param data raw 16 bit data
 	 */
-	constexpr Move(uint16_t data) {
-		this->data = data;
-	}
+	constexpr Move(uint16_t);
 
 	/**
 	 * @brief constructor for basic move
@@ -27,11 +25,7 @@ public:
 	 * @param from from square
 	 * @param to to square
 	 */
-	constexpr Move(int from, int to) {
-		this->data = 0;
-		this->data |= to;
-		this->data |= (from << 6);
-	}
+	constexpr Move(int from, int to);
 
 	/**
 	 * @brief constructor for promotion move
@@ -40,24 +34,35 @@ public:
 	 * @param to to square
 	 * @param piece piece to promote to, queen = false; knight = true
 	 */
-	constexpr Move(int from, int to, bool piece) {
-		this->data = 0;
-		this->data |= to;
-		this->data |= (from << 6);
-		this->data |= 0x4000 & piece;
-		this->data |= 0x8000;
-	};
+	constexpr Move(int from, int to, bool piece);
 
-	constexpr uint8_t from() {
-		return ((data >> 6) & 0x3f);
-	}
-	constexpr uint8_t to() {
-		return (data & 0x3f);
-	}
-	constexpr bool isPromotion() {
-		return (data & 0x8000);
-	}
-	constexpr bool promotionPiece() {
-		return (data & 0x4000);
-	}
+	/**
+	 * @brief returns the square the piece came from
+	 *
+	 * @return constexpr uint8_t
+	 */
+	constexpr uint8_t from();
+
+	/**
+	 * @brief returns the square the piece moved to
+	 *
+	 * @return constexpr uint8_t
+	 */
+	constexpr uint8_t to();
+
+	/**
+	 * @brief returns whether or not the move has a promotion flag
+	 *
+	 * @return true
+	 * @return false
+	 */
+	constexpr bool isPromotion();
+
+	/**
+	 * @brief returns which piece the pawn promoted to during the move
+	 *
+	 * @return true = knight
+	 * @return false = queen
+	 */
+	constexpr bool promotionPiece();
 };
