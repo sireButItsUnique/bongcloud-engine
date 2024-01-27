@@ -13,6 +13,23 @@ public:
 	uint16_t data;
 
 	/**
+	 * @brief constructor for promotion move
+	 *
+	 * @param from from square
+	 * @param to to square
+	 * @param piece piece to promote to, queen = false; knight = true
+	 */
+	constexpr Move(int, int, bool);
+
+	/**
+	 * @brief constructor for castle move
+	 *
+	 * @param color color that is castling, white = false; black = true
+	 * @param side which side castling occurs, kingside = false; queenside = true
+	 */
+	constexpr Move(bool, bool);
+
+	/**
 	 * @brief constructor with raw data
 	 *
 	 * @param data raw 16 bit data
@@ -25,16 +42,7 @@ public:
 	 * @param from from square
 	 * @param to to square
 	 */
-	constexpr Move(int from, int to);
-
-	/**
-	 * @brief constructor for promotion move
-	 *
-	 * @param from from square
-	 * @param to to square
-	 * @param piece piece to promote to, queen = false; knight = true
-	 */
-	constexpr Move(int from, int to, bool piece);
+	constexpr Move(int, int);
 
 	/**
 	 * @brief returns the square the piece came from
@@ -65,4 +73,12 @@ public:
 	 * @return false = queen
 	 */
 	constexpr bool promotionPiece();
+
+	/**
+	 * @brief returns whether or not the move has a castle flag
+	 *
+	 * @return true
+	 * @return false
+	 */
+	constexpr bool isCastle();
 };

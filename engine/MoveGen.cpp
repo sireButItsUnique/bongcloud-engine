@@ -310,3 +310,48 @@ void MoveGen::genPawnMoves(unsigned ll pawn, bool color, unsigned ll friendlyPie
 		pawn &= ~(1ULL << to);
 	}
 }
+
+void MoveGen::genCastleMoves(bool side, bool color, unsigned ll friendlyPieces, unsigned ll enemyPieces, unsigned ll enemyAttacks, vector<Move> &moves) {
+
+	// queenside
+	if (side) {
+		if (color) { // black
+			if ((friendlyPieces | enemyPieces) & 0x7000000000000000) {
+				return;
+			}
+			if (enemyAttacks & 0x7800000000000000) {
+				return;
+			}
+			moves.push_back(Move(color, side));
+		} else { // white
+			if ((friendlyPieces | enemyPieces) & 0x70) {
+				return;
+			}
+			if (enemyAttacks & 0x78) {
+				return;
+			}
+			moves.push_back(Move(color, side));
+		}
+	}
+
+	// kingside
+	else {
+		if (color) { // black
+			if ((friendlyPieces | enemyPieces) & 0x600000000000000) {
+				return;
+			}
+			if (enemyAttacks & 0xe00000000000000) {
+				return;
+			}
+			moves.push_back(Move(color, side));
+		} else { // white
+			if ((friendlyPieces | enemyPieces) & 0x6) {
+				return;
+			}
+			if (enemyAttacks & 0xe) {
+				return;
+			}
+			moves.push_back(Move(color, side));
+		}
+	}
+}
