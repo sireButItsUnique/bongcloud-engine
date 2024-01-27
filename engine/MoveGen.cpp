@@ -110,8 +110,6 @@ void MoveGen::initializeRays() {
 	rookLookupOffsets[0] = 0;
 	for (int i = 1; i < 64; i++) {
 		rookLookupOffsets[i] = rookLookupOffsets[i - 1] + (1ULL << __popcnt64(rookRays[i - 1]));
-		// cout << i << ": " << rookLookupOffsets[i] << " (+2^" << __popcnt64(rookRays[i]) << ")";
-		// cout << " (" << rookRays[i] << ")\n";
 	}
 
 	// bishop attacks
@@ -122,8 +120,6 @@ void MoveGen::initializeRays() {
 	bishopLookupOffsets[0] = 0;
 	for (int i = 1; i < 64; i++) {
 		bishopLookupOffsets[i] = bishopLookupOffsets[i - 1] + (1ULL << __popcnt64(bishopRays[i - 1]));
-		// cout << i << ": " << bishopLookupOffsets[i] << " (+2^" << __popcnt64(bishopRays[i]) << ")";
-		// cout << " (" << bishopRays[i] << ")\n";
 	}
 }
 
@@ -217,12 +213,8 @@ void MoveGen::genBishopMoves(unsigned ll bishop, unsigned ll friendlyPieces, uns
 
 	// gen relevant bits + lookup
 	unsigned ll blockers = _pext_u64(friendlyPieces | enemyPieces, bishop);
-	// cout << "BISHOP: lookupIdx (" << (bishopLookupOffsets[from] + blockers) << ") = offset (" << bishopLookupOffsets[from];
-	// cout << ") + relevantBits (" << blockers << ")\n";
-
 	bishop = bishopLookup[bishopLookupOffsets[from] + blockers];
 	bishop &= ~friendlyPieces;
-	// cout << "BISHOP: moves = " << bishop << endl;
 
 	// iterate over end positions
 	while (bishop) {
@@ -240,13 +232,8 @@ void MoveGen::genRookMoves(unsigned ll rook, unsigned ll friendlyPieces, unsigne
 
 	// gen relevant bits + lookup
 	unsigned ll blockers = _pext_u64(friendlyPieces | enemyPieces, rook);
-
-	// cout << "ROOK: lookupIdx (" << (rookLookupOffsets[from] + blockers) << ") = offset (" << rookLookupOffsets[from];
-	// cout << ") + relevantBits (" << blockers << ")\n";
-
 	rook = rookLookup[rookLookupOffsets[from] + blockers];
 	rook &= ~friendlyPieces;
-	// cout << "ROOK: moves = " << rook << endl;
 
 	// iterate over end positions
 	while (rook) {
