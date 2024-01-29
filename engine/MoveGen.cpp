@@ -175,18 +175,21 @@ void MoveGen::initializeKingLookup() {
 	}
 }
 
-void MoveGen::genKnightMoves(unsigned ll knight, unsigned ll friendlyPieces, vector<Move> &moves) {
+void MoveGen::genKnightMoves(unsigned ll knightBoard, unsigned ll friendlyPieces, vector<Move> &moves) {
 
-	// get lookup
-	uint8_t from = _tzcnt_u64(knight);
-	knight = knightLookup[from];
-	knight &= ~friendlyPieces;
+	while (knightBoard) {
+		// get lookup
+		uint8_t from = _tzcnt_u64(knightBoard);
+		unsigned ll knight = knightLookup[from];
+		knight &= ~friendlyPieces;
 
-	// iterate over end positions
-	while (knight) {
-		uint8_t to = _tzcnt_u64(knight);
-		moves.push_back(Move(from, to));
-		knight &= ~(1ULL << to);
+		// iterate over end positions
+		while (knight) {
+			uint8_t to = _tzcnt_u64(knight);
+			moves.push_back(Move(from, to));
+			knight &= ~(1ULL << to);
+		}
+		knightBoard &= ~(1ULL << from);
 	}
 }
 
@@ -205,109 +208,121 @@ void MoveGen::genKingMoves(unsigned ll king, unsigned ll friendlyPieces, vector<
 	}
 }
 
-void MoveGen::genBishopMoves(unsigned ll bishop, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
+void MoveGen::genBishopMoves(unsigned ll bishopBoard, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
 
-	// gen rays
-	uint8_t from = _tzcnt_u64(bishop);
-	bishop = bishopRays[from];
+	while (bishopBoard) {
+		// gen rays
+		uint8_t from = _tzcnt_u64(bishopBoard);
+		unsigned ll bishop = bishopRays[from];
 
-	// gen relevant bits + lookup
-	unsigned ll blockers = _pext_u64(friendlyPieces | enemyPieces, bishop);
-	bishop = bishopLookup[bishopLookupOffsets[from] + blockers];
-	bishop &= ~friendlyPieces;
+		// gen relevant bits + lookup
+		unsigned ll blockers = _pext_u64(friendlyPieces | enemyPieces, bishop);
+		bishop = bishopLookup[bishopLookupOffsets[from] + blockers];
+		bishop &= ~friendlyPieces;
 
-	// iterate over end positions
-	while (bishop) {
-		uint8_t to = _tzcnt_u64(bishop);
-		moves.push_back(Move(from, to));
-		bishop &= ~(1ULL << to);
-	}
-}
-
-void MoveGen::genRookMoves(unsigned ll rook, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
-
-	// gen rays
-	uint8_t from = _tzcnt_u64(rook);
-	rook = rookRays[from];
-
-	// gen relevant bits + lookup
-	unsigned ll blockers = _pext_u64(friendlyPieces | enemyPieces, rook);
-	rook = rookLookup[rookLookupOffsets[from] + blockers];
-	rook &= ~friendlyPieces;
-
-	// iterate over end positions
-	while (rook) {
-		uint8_t to = _tzcnt_u64(rook);
-		moves.push_back(Move(from, to));
-		rook &= ~(1ULL << to);
-	}
-}
-
-void MoveGen::genQueenMoves(unsigned ll queen, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
-
-	// gen rays
-	uint8_t from = _tzcnt_u64(queen);
-	unsigned ll rookBlockers = rookRays[from];
-	unsigned ll bishopBlockers = bishopRays[from];
-
-	// gen relevant bits + lookup
-	rookBlockers = _pext_u64(friendlyPieces | enemyPieces, rookBlockers);
-	bishopBlockers = _pext_u64(friendlyPieces | enemyPieces, bishopBlockers);
-	queen = rookLookup[rookLookupOffsets[from] + rookBlockers];
-	queen |= bishopLookup[bishopLookupOffsets[from] + bishopBlockers];
-	queen &= ~friendlyPieces;
-
-	// iterate over end positions
-	while (queen) {
-		uint8_t to = _tzcnt_u64(queen);
-		moves.push_back(Move(from, to));
-		queen &= ~(1ULL << to);
-	}
-}
-
-void MoveGen::genPawnMoves(unsigned ll pawn, bool color, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
-
-	// mask pawn
-	uint8_t from = _tzcnt_u64(pawn);
-
-	// pushes
-	if (color) {
-		pawn >>= 8;
-		pawn &= ~(friendlyPieces | enemyPieces);
-		if (pawn & 0xff0000000000) {
-			pawn |= (pawn >> 8);
-			pawn &= ~(friendlyPieces | enemyPieces);
-		}
-	} else {
-		pawn <<= 8;
-		pawn &= ~(friendlyPieces | enemyPieces);
-		if (pawn & 0xff0000) {
-			pawn |= (pawn << 8);
-			pawn &= ~(friendlyPieces | enemyPieces);
-		}
-	}
-
-	// captures
-	if (color) {
-		pawn |= (((1ULL << from) >> 9) & 0x7f7f7f7f7f7f7f7f & enemyPieces);
-		pawn |= (((1ULL << from) >> 7) & 0xfefefefefefefefe & enemyPieces);
-	} else {
-		pawn |= (((1ULL << from) << 9) & 0xfefefefefefefefe & enemyPieces);
-		pawn |= (((1ULL << from) << 7) & 0x7f7f7f7f7f7f7f7f & enemyPieces);
-	}
-	cout << "PAWN: " << pawn << endl;
-
-	// iterate over end positions
-	while (pawn) {
-		uint8_t to = _tzcnt_u64(pawn);
-		if (to >= 56 || to <= 7) {
-			moves.push_back(Move(from, to, true));
-			moves.push_back(Move(from, to, false));
-		} else {
+		// iterate over end positions
+		while (bishop) {
+			uint8_t to = _tzcnt_u64(bishop);
 			moves.push_back(Move(from, to));
+			bishop &= ~(1ULL << to);
+		}
+		bishopBoard &= ~(1ULL << from);
+	}
+}
+
+void MoveGen::genRookMoves(unsigned ll rookBoard, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
+
+	while (rookBoard) {
+		// gen rays
+		uint8_t from = _tzcnt_u64(rookBoard);
+		unsigned ll rook = rookRays[from];
+
+		// gen relevant bits + lookup
+		unsigned ll blockers = _pext_u64(friendlyPieces | enemyPieces, rook);
+		rook = rookLookup[rookLookupOffsets[from] + blockers];
+		rook &= ~friendlyPieces;
+
+		// iterate over end positions
+		while (rook) {
+			uint8_t to = _tzcnt_u64(rook);
+			moves.push_back(Move(from, to));
+			rook &= ~(1ULL << to);
+		}
+		rookBoard &= ~(1ULL << from);
+	}
+}
+
+void MoveGen::genQueenMoves(unsigned ll queenBoard, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
+
+	while (queenBoard) {
+		// gen rays
+		uint8_t from = _tzcnt_u64(queenBoard);
+		unsigned ll rookBlockers = rookRays[from];
+		unsigned ll bishopBlockers = bishopRays[from];
+
+		// gen relevant bits + lookup
+		rookBlockers = _pext_u64(friendlyPieces | enemyPieces, rookBlockers);
+		bishopBlockers = _pext_u64(friendlyPieces | enemyPieces, bishopBlockers);
+		unsigned ll queen = rookLookup[rookLookupOffsets[from] + rookBlockers];
+		queen |= bishopLookup[bishopLookupOffsets[from] + bishopBlockers];
+		queen &= ~friendlyPieces;
+
+		// iterate over end positions
+		while (queen) {
+			uint8_t to = _tzcnt_u64(queen);
+			moves.push_back(Move(from, to));
+			queen &= ~(1ULL << to);
+		}
+		queenBoard &= ~(1ULL << from);
+	}
+}
+
+void MoveGen::genPawnMoves(unsigned ll pawnBoard, bool color, unsigned ll friendlyPieces, unsigned ll enemyPieces, vector<Move> &moves) {
+
+	while (pawnBoard) {
+		// mask pawn
+		uint8_t from = _tzcnt_u64(pawnBoard);
+		unsigned ll pawn = (1ULL << from);
+
+		// pushes
+		if (color) {
+			pawn >>= 8;
+			pawn &= ~(friendlyPieces | enemyPieces);
+			if (pawn & 0xff0000000000) {
+				pawn |= (pawn >> 8);
+				pawn &= ~(friendlyPieces | enemyPieces);
+			}
+		} else {
+			pawn <<= 8;
+			pawn &= ~(friendlyPieces | enemyPieces);
+			if (pawn & 0xff0000) {
+				pawn |= (pawn << 8);
+				pawn &= ~(friendlyPieces | enemyPieces);
+			}
 		}
 
-		pawn &= ~(1ULL << to);
+		// captures
+		if (color) {
+			pawn |= (((1ULL << from) >> 9) & 0x7f7f7f7f7f7f7f7f & enemyPieces);
+			pawn |= (((1ULL << from) >> 7) & 0xfefefefefefefefe & enemyPieces);
+		} else {
+			pawn |= (((1ULL << from) << 9) & 0xfefefefefefefefe & enemyPieces);
+			pawn |= (((1ULL << from) << 7) & 0x7f7f7f7f7f7f7f7f & enemyPieces);
+		}
+
+		// iterate over end positions
+		while (pawn) {
+			uint8_t to = _tzcnt_u64(pawn);
+			if (to >= 56 || to <= 7) {
+				moves.push_back(Move(from, to, true));
+				moves.push_back(Move(from, to, false));
+			} else {
+				moves.push_back(Move(from, to));
+			}
+
+			pawn &= ~(1ULL << to);
+		}
+		pawnBoard &= ~(1ULL << from);
 	}
 }
 

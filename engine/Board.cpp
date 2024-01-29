@@ -1,10 +1,10 @@
 #include "Board.hpp"
 
-Board::Board() {
-	setStartingPos();
+Board::Board(MoveGen *moveGen) {
+	setStartingPos(moveGen);
 }
 
-void Board::setStartingPos() {
+void Board::setStartingPos(MoveGen *moveGen) {
 	pieceBoards[pawnWhite] = 0xff00;
 	pieceBoards[pawnBlack] = 0xff000000000000;
 	pieceBoards[knightWhite] = 0x42;
@@ -19,7 +19,9 @@ void Board::setStartingPos() {
 	pieceBoards[kingBlack] = 0x800000000000000;
 	colorBoards[0] = 0xffff;
 	colorBoards[1] = 0xffff000000000000;
-	turn = false;
+	genAttackBoard(white, moveGen);
+	genAttackBoard(black, moveGen);
+	turn = white;
 	whiteKingCastle = true;
 	whiteQueenCastle = true;
 	blackKingCastle = true;
@@ -85,22 +87,28 @@ void Board::movePiece(int from, int to) {
 	turn = !turn;
 }
 
+void Board::genAttackBoard(bool color, MoveGen *moveGen) {
+	moveGen->genKingMovesA(pieceBoards[kingWhite + color], colorBoards[color], attackBoards[color]);
+	moveGen->genKnightMovesA(pieceBoards[knightWhite + color], colorBoards[color], attackBoards[color]);
+	moveGen->genBishopMovesA(pieceBoards[bishopWhite + color], colorBoards[color], colorBoards[!color], attackBoards[color]);
+	moveGen->genRookMovesA(pieceBoards[rookWhite + color], colorBoards[color], colorBoards[!color], attackBoards[color]);
+	moveGen->genQueenMovesA(pieceBoards[queenWhite + color], colorBoards[color], colorBoards[!color], attackBoards[color]);
+	moveGen->genPawnMovesA(pieceBoards[pawnWhite + color], color, colorBoards[color], colorBoards[!color], attackBoards[color]);
+}
+
 void Board::genMoves(MoveGen *moveGen) {
 	moves.clear();
 
-	// black moves
-	if (turn) {
-
-	}
-
-	// white moves
-	else {
-	}
+	moveGen->genKingMoves(pieceBoards[kingWhite + turn], colorBoards[turn], moves);
+	moveGen->genKnightMoves(pieceBoards[knightWhite + turn], colorBoards[turn], moves);
+	moveGen->genBishopMoves(pieceBoards[bishopWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
+	moveGen->genRookMoves(pieceBoards[rookWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
+	moveGen->genQueenMoves(pieceBoards[queenWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
+	moveGen->genPawnMoves(pieceBoards[pawnWhite + turn], turn, colorBoards[turn], colorBoards[!turn], moves);
 }
 
-void Board::print(string color) {
+void Board::print(bool c) {
 	int i = 0;
-	bool c = (color == "black");
 	for (int square = 63 * (!c); (c ? square < 64 : square >= 0); (c ? square++ : square--)) {
 
 		// check if there's a piece
@@ -118,5 +126,14 @@ void Board::print(string color) {
 		if (i % 8 == 7)
 			cout << '\n';
 		i++;
+	}
+}
+
+void Board::printMoves() {
+	for (int i = 0; i < moves.size(); i++) {
+		cout << TO_ALGEBRA(moves[i].from()) << TO_ALGEBRA(moves[i].to()) << " ";
+		if (i % 8 == 1) {
+			cout << endl;
+		}
 	}
 }

@@ -6,15 +6,16 @@ using namespace std;
 
 int main() {
 	string input;
-	Board *board = new Board();
 
-	vector<Move> moves;
 	MoveGen *moveGen = new MoveGen();
+	Board *board = new Board(moveGen);
 
 	cin >> input;
 	while (input != "quit") {
 		board->movePiece(input);
-		board->print("white");
+		board->genMoves(moveGen);
+		board->print(white);
+		board->printMoves();
 		cin >> input;
 	}
 	return 0;
