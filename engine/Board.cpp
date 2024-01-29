@@ -97,6 +97,7 @@ void Board::genAttackBoard(bool color, MoveGen *moveGen) {
 }
 
 void Board::genMoves(MoveGen *moveGen) {
+	auto start = chrono::high_resolution_clock::now();
 	moves.clear();
 
 	moveGen->genKingMoves(pieceBoards[kingWhite + turn], colorBoards[turn], moves);
@@ -105,6 +106,10 @@ void Board::genMoves(MoveGen *moveGen) {
 	moveGen->genRookMoves(pieceBoards[rookWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
 	moveGen->genQueenMoves(pieceBoards[queenWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
 	moveGen->genPawnMoves(pieceBoards[pawnWhite + turn], turn, colorBoards[turn], colorBoards[!turn], moves);
+	auto end = chrono::high_resolution_clock::now();
+	double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+	time_taken *= 1e-9;
+	cout << "Generated " << moves.size() << " moves in " << fixed << time_taken << setprecision(9) << " secs\n";
 }
 
 void Board::print(bool c) {
@@ -130,10 +135,21 @@ void Board::print(bool c) {
 }
 
 void Board::printMoves() {
+	// e2e4 d7d5 e4d5 c7c6 d5c6 h7h6 c6b7 g7g6
 	for (int i = 0; i < moves.size(); i++) {
-		cout << TO_ALGEBRA(moves[i].from()) << TO_ALGEBRA(moves[i].to()) << " ";
-		if (i % 8 == 1) {
+		if (moves[i].isCastle()) {
+			cout << (moves[i].castleSide() ? "O-O-O" : "O-O");
+		} else {
+			cout << TO_ALGEBRA(moves[i].from()) << TO_ALGEBRA(moves[i].to());
+			if (moves[i].isPromotion()) {
+				cout << "(" << (moves[i].promotionPiece() ? "knight" : "queen") << ")";
+			}
+		}
+		cout << " ";
+
+		if (i % 8 == 7) {
 			cout << endl;
 		}
 	}
+	cout << endl;
 }

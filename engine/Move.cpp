@@ -12,7 +12,7 @@ Move::Move(int from, int to, bool piece) {
 	data = 0;
 	data |= to;
 	data |= (from << 6);
-	data |= 0x4000 & piece;
+	data |= 0x4000 & (piece << 14);
 	data |= 0x8000;
 }
 
@@ -44,4 +44,8 @@ bool Move::promotionPiece() {
 
 bool Move::isCastle() {
 	return (this->from() == this->to());
+}
+
+bool Move::castleSide() {
+	return (data & 0x1000);
 }

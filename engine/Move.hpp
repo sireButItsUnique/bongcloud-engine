@@ -81,4 +81,12 @@ public:
 	 * @return false
 	 */
 	bool isCastle();
+
+	/**
+	 * @brief returns which side the guy is castling
+	 *
+	 * @return true = queenside
+	 * @return false = kingside
+	 */
+	bool castleSide();
 };

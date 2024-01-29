@@ -1,8 +1,7 @@
 #include "MoveGen.hpp"
 
 MoveGen::MoveGen() {
-	time_t start, end;
-	time(&start);
+	auto start = chrono::high_resolution_clock::now();
 
 	initializeRays();
 	initializeRookLookup();
@@ -10,9 +9,10 @@ MoveGen::MoveGen() {
 	initializeKnightLookup();
 	initializeKingLookup();
 
-	time(&end);
-	double time_taken = double(end - start);
-	cout << "Initiated move generator in " << fixed << time_taken << setprecision(5) << " secs\n";
+	auto end = chrono::high_resolution_clock::now();
+	double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+	time_taken *= 1e-9;
+	cout << "Initiated move generator in " << fixed << time_taken << setprecision(9) << " secs\n";
 }
 
 void MoveGen::initializeRays() {
