@@ -1,6 +1,10 @@
 #include "Eval.hpp"
 
-double Eval::getEval(Board *board) {
+Eval::Eval() {
+	return;
+}
+
+double Eval::getBoardEval(Board *board) {
 
 	// king dead
 	if (!board->pieceBoards[kingBlack]) {
@@ -29,16 +33,87 @@ double Eval::getEval(Board *board) {
 	return res;
 }
 
-Move Eval::getBestMove(Board *board, int ply, float &timeLeft) {
+double Eval::getBoardEvalRec(Board *board, int ply, int &evaluated) {
 
-	if (!ply) {
-		return this->getEval(board);
+	evaluated++;
+	if (ply <= 0) {
+		return getBoardEval(board);
 	}
 
+	// set up board + eval
 	board->genMoves();
 	double eval = (board->turn ? 1 : -1) * numeric_limits<double>::infinity();
+
+	// stalemate check
+	if (!board->moves.size()) {
+		if (board->inCheck(board->turn)) {
+			eval = 0;
+		}
+		return eval;
+	}
+
+	// branch out to all moves
 	for (Move &move : board->moves) {
 		Board *newBoard = new Board(*board);
 		newBoard->movePiece(move.from(), move.to());
+
+		// make it good for black
+		if (board->turn) {
+			eval = min(eval, getBoardEvalRec(newBoard, ply - 1, evaluated));
+		}
+
+		// make it good for white
+		else {
+			eval = max(eval, getBoardEvalRec(newBoard, ply - 1, evaluated));
+		}
 	}
+	return eval;
+}
+
+Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated) {
+
+	// set up board + eval
+	auto start = chrono::high_resolution_clock::now();
+	evaluated = 1;
+	board->genMoves();
+	eval = (board->turn ? 1 : -1) * numeric_limits<double>::infinity();
+	Move res = Move(16, 16);
+
+	// stalemate check
+	if (!board->moves.size()) {
+		if (board->inCheck(board->turn)) {
+			eval = 0;
+		}
+		return eval;
+	}
+
+	// branch out to all moves
+	for (Move &move : board->moves) {
+		Board *newBoard = new Board(*board);
+		newBoard->movePiece(move.from(), move.to());
+
+		// make it good for black
+		if (board->turn) {
+			double moveEval = getBoardEvalRec(newBoard, ply - 1, evaluated);
+			if (eval > moveEval) {
+				eval = moveEval;
+				res = move;
+			}
+		}
+
+		// make it good for white
+		else {
+			double moveEval = getBoardEvalRec(newBoard, ply - 1, evaluated);
+			if (eval < moveEval) {
+				eval = moveEval;
+				res = move;
+			}
+		}
+	}
+
+	auto end = chrono::high_resolution_clock::now();
+	double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+	time_taken *= 1e-9;
+	cout << GREEN << "Evaluated " << evaluated << " positions in " << fixed << time_taken << setprecision(9) << " secs\n" << UNCOLOR;
+	return res;
 }

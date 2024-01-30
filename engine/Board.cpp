@@ -126,17 +126,18 @@ void Board::genAttackBoard(bool color) {
 	moveGen->genPawnMovesA(pieceBoards[pawnWhite + color], color, colorBoards[color], colorBoards[!color], attackBoards[color]);
 }
 
-void Board::genMoves() {
+void Board::genMoves(bool debug) {
+
 	auto start = chrono::high_resolution_clock::now();
 	moves.clear();
 
 	genAttackBoard(!turn);
-	moveGen->genKingMoves(pieceBoards[kingWhite + turn], colorBoards[turn], moves);
 	moveGen->genKnightMoves(pieceBoards[knightWhite + turn], colorBoards[turn], moves);
+	moveGen->genPawnMoves(pieceBoards[pawnWhite + turn], turn, colorBoards[turn], colorBoards[!turn], moves);
 	moveGen->genBishopMoves(pieceBoards[bishopWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
 	moveGen->genRookMoves(pieceBoards[rookWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
 	moveGen->genQueenMoves(pieceBoards[queenWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
-	moveGen->genPawnMoves(pieceBoards[pawnWhite + turn], turn, colorBoards[turn], colorBoards[!turn], moves);
+	moveGen->genKingMoves(pieceBoards[kingWhite + turn], colorBoards[turn], moves);
 
 	if (turn) {
 		moveGen->genCastleMoves(turn, blackKingCastle, blackQueenCastle, colorBoards[turn], colorBoards[!turn], attackBoards[!turn], moves);
@@ -144,10 +145,17 @@ void Board::genMoves() {
 		moveGen->genCastleMoves(turn, whiteKingCastle, whiteQueenCastle, colorBoards[turn], colorBoards[!turn], attackBoards[!turn], moves);
 	}
 
-	auto end = chrono::high_resolution_clock::now();
-	double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-	time_taken *= 1e-9;
-	cout << GREEN << "Generated " << moves.size() << " moves in " << fixed << time_taken << setprecision(9) << " secs\n" << UNCOLOR;
+	if (debug) {
+		auto end = chrono::high_resolution_clock::now();
+		double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+		time_taken *= 1e-9;
+		cout << GREEN << "Generated " << moves.size() << " moves in " << fixed << time_taken << setprecision(9) << " secs\n" << UNCOLOR;
+	}
+}
+
+bool Board::inCheck(bool color) {
+	this->genAttackBoard(!color);
+	return (this->colorBoards[kingWhite + color] & this->attackBoards[!color]);
 }
 
 void Board::print(bool c) {

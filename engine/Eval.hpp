@@ -1,5 +1,5 @@
 #pragma once
-#include "Board.cpp"
+#include "Board.hpp"
 #include "includes.hpp"
 
 class Eval {
@@ -12,14 +12,25 @@ public:
 	 * @param board
 	 * @return eval, negative = black advantage, positive = white advantage
 	 */
-	double getEval(Board *);
+	double getBoardEval(Board *);
+
+	/**
+	 * @brief Get the eval of the board, taking future moves into account
+	 *
+	 * @param board
+	 * @param ply
+	 * @param evaluated how many nodes evaluated so far
+	 * @return eval, negative = black advantage, positive = white advantage
+	 */
+	double getBoardEvalRec(Board *, int, int &);
 
 	/**
 	 * @brief Get the best move
 	 *
 	 * @param board
 	 * @param ply
-	 * @param timeLeft
+	 * @param eval
+	 * @param evaluated how many nodes evaluated so far
 	 */
-	Move getBestMove(Board *, int, float &);
+	Move getBestMove(Board *, int, double &, int &);
 };

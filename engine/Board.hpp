@@ -10,7 +10,6 @@ public:
 
 	/**
 	 * @brief who's turn it is to move and therefore generate moves, white=false; black=true
-	 *
 	 */
 	bool turn;
 	vector<Move> moves;
@@ -54,9 +53,18 @@ public:
 	/**
 	 * @brief generates all possible moves for the current board
 	 *
-	 * @param moveGen helper class used to generate pseudo legal moves
+	 * @param debug whether or not to print time msgs
 	 */
-	void genMoves();
+	void genMoves(bool = false);
+
+	/**
+	 * @brief returns whether or not the color is currently in check
+	 *
+	 * @param color white = false; black = true
+	 * @return true
+	 * @return false
+	 */
+	bool inCheck(bool);
 
 	/**
 	 * @brief debug only, prints the board
