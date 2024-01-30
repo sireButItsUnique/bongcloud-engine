@@ -150,25 +150,34 @@ void Board::genMoves(MoveGen *moveGen) {
 }
 
 void Board::print(bool c) {
-	int i = 0;
+	int idx = 0;
+	int sqr = 0;
 	cout << BOLD << "Board:\n" << UNBOLD;
 	for (int square = 63 * (!c); (c ? square < 64 : square >= 0); (c ? square++ : square--)) {
 
 		// check if there's a piece
+		cout << ((sqr % 2) ? "\x1B[100m" : "\x1B[107m");
 		bool found = false;
 		for (int i = 0; i < 12; i++) {
 			if (pieceBoards[i] & (1ULL << square)) {
-				cout << enumToChar[i] << ' ';
+				cout << ((enumToChar[i] - 'z' > 0) ? "\x1B[34m" : "\x1B[36m") << BOLD;
+				cout << enumToChar[i];
+				cout << ' ';
 				found = true;
 				break;
 			}
 		}
-		if (!found)
-			cout << ". ";
+		if (!found) {
+			cout << "  ";
+		}
+		cout << UNCOLOR;
 
-		if (i % 8 == 7)
+		if (idx % 8 == 7) {
 			cout << '\n';
-		i++;
+			sqr++;
+		}
+		idx++;
+		sqr++;
 	}
 	cout << BOLD << "State:\n" << UNBOLD;
 	cout << (turn ? "Black to play" : "White to play") << endl;
