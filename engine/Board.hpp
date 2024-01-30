@@ -14,6 +14,7 @@ public:
 	 */
 	bool turn;
 	vector<Move> moves;
+	MoveGen *moveGen;
 
 	// debug only
 	string enumToChar = "pPnNbBrRqQkK";
@@ -25,7 +26,7 @@ public:
 	 *
 	 * @param moveGen helper class used to generate pseudo legal moves
 	 */
-	void setStartingPos(MoveGen *);
+	void setStartingPos();
 
 	/**
 	 * @brief move piece in standard piece bitboards
@@ -48,14 +49,14 @@ public:
 	 * @param color bool representing the color to generate attack board for, white = false; black = true
 	 * @param moveGen helper class used to generate pseudo legal moves (and in this case attacks)
 	 */
-	void genAttackBoard(bool, MoveGen *);
+	void genAttackBoard(bool);
 
 	/**
 	 * @brief generates all possible moves for the current board
 	 *
 	 * @param moveGen helper class used to generate pseudo legal moves
 	 */
-	void genMoves(MoveGen *);
+	void genMoves();
 
 	/**
 	 * @brief debug only, prints the board

@@ -18,7 +18,8 @@ public:
 	 * @brief Get the best move
 	 *
 	 * @param board
+	 * @param ply
 	 * @param timeLeft
 	 */
-	Move getBestMove(Board *, float &);
+	Move getBestMove(Board *, int, float &);
 };

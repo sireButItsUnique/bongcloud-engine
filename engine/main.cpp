@@ -4,6 +4,11 @@
 
 using namespace std;
 
+/*
+NOTE NOTE NOTE NOTE
+-cannot make a castle move on board
+-cannot make a promotion move on board
+*/
 int main() {
 	setlocale(LC_ALL, "en_US.utf8");
 	string input;
@@ -14,11 +19,11 @@ int main() {
 	while (input != "quit") {
 
 		if (input == "reset") {
-			board->setStartingPos(moveGen);
+			board->setStartingPos();
 		} else {
 			board->movePiece(input);
 		}
-		board->genMoves(moveGen);
+		board->genMoves();
 		board->print(white);
 		board->printMoves();
 

@@ -1,10 +1,11 @@
 #include "Board.hpp"
 
 Board::Board(MoveGen *moveGen) {
-	setStartingPos(moveGen);
+	this->moveGen = moveGen;
+	setStartingPos();
 }
 
-void Board::setStartingPos(MoveGen *moveGen) {
+void Board::setStartingPos() {
 	pieceBoards[pawnWhite] = 0xff00;
 	pieceBoards[pawnBlack] = 0xff000000000000;
 	pieceBoards[knightWhite] = 0x42;
@@ -19,8 +20,8 @@ void Board::setStartingPos(MoveGen *moveGen) {
 	pieceBoards[kingBlack] = 0x800000000000000;
 	colorBoards[0] = 0xffff;
 	colorBoards[1] = 0xffff000000000000;
-	genAttackBoard(white, moveGen);
-	genAttackBoard(black, moveGen);
+	genAttackBoard(white);
+	genAttackBoard(black);
 	turn = white;
 	whiteKingCastle = true;
 	whiteQueenCastle = true;
@@ -115,7 +116,7 @@ void Board::movePiece(int from, int to) {
 	turn = !turn;
 }
 
-void Board::genAttackBoard(bool color, MoveGen *moveGen) {
+void Board::genAttackBoard(bool color) {
 	attackBoards[color] = 0;
 	moveGen->genKingMovesA(pieceBoards[kingWhite + color], colorBoards[color], attackBoards[color]);
 	moveGen->genKnightMovesA(pieceBoards[knightWhite + color], colorBoards[color], attackBoards[color]);
@@ -125,11 +126,11 @@ void Board::genAttackBoard(bool color, MoveGen *moveGen) {
 	moveGen->genPawnMovesA(pieceBoards[pawnWhite + color], color, colorBoards[color], colorBoards[!color], attackBoards[color]);
 }
 
-void Board::genMoves(MoveGen *moveGen) {
+void Board::genMoves() {
 	auto start = chrono::high_resolution_clock::now();
 	moves.clear();
 
-	genAttackBoard(!turn, moveGen);
+	genAttackBoard(!turn);
 	moveGen->genKingMoves(pieceBoards[kingWhite + turn], colorBoards[turn], moves);
 	moveGen->genKnightMoves(pieceBoards[knightWhite + turn], colorBoards[turn], moves);
 	moveGen->genBishopMoves(pieceBoards[bishopWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
