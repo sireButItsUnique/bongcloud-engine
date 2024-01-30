@@ -137,14 +137,15 @@ public:
 	/**
 	 * @brief generates possible castles (note position of king and rook are not checked as if they moved canCastle will already be marked false)
 	 *
-	 * @param side side to castle, kingside = false; queenside = true
 	 * @param color color for which castling is to be checked, white = false; black = true
+	 * @param canCastleKing can castle kingside
+	 * @param canCastleQueen can castle queenside
 	 * @param friendlyPieces pieceboard representing all friendly pieces
 	 * @param enemyPieces pieceboard representing all enemy pieces
 	 * @param enemyAttacks pieceboard representing all pieces the enemy currently attakcs
 	 * @param moves resulting moves
 	 */
-	void genCastleMoves(bool, bool, unsigned ll, unsigned ll, unsigned ll, vector<Move> &);
+	void genCastleMoves(bool, bool, bool, unsigned ll, unsigned ll, unsigned ll, vector<Move> &);
 
 	/**
 	 * @brief generates knight moves

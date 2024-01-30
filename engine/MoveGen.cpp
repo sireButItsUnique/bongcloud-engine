@@ -12,7 +12,7 @@ MoveGen::MoveGen() {
 	auto end = chrono::high_resolution_clock::now();
 	double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 	time_taken *= 1e-9;
-	cout << "Initiated move generator in " << fixed << time_taken << setprecision(9) << " secs\n";
+	cout << GREEN << "Initiated move generator in " << fixed << time_taken << setprecision(9) << " secs\n" << UNCOLOR;
 }
 
 void MoveGen::initializeRays() {
@@ -326,47 +326,50 @@ void MoveGen::genPawnMoves(unsigned ll pawnBoard, bool color, unsigned ll friend
 	}
 }
 
-void MoveGen::genCastleMoves(bool side, bool color, unsigned ll friendlyPieces, unsigned ll enemyPieces, unsigned ll enemyAttacks, vector<Move> &moves) {
+void MoveGen::genCastleMoves(
+	bool color, bool canCastleKing, bool canCastleQueen, unsigned ll friendlyPieces, unsigned ll enemyPieces, unsigned ll enemyAttacks, vector<Move> &moves
+) {
 
 	// queenside
-	if (side) {
+	if (canCastleQueen) {
 		if (color) { // black
 			if ((friendlyPieces | enemyPieces) & 0x7000000000000000) {
-				return;
+				// pieces blocking
+			} else if (enemyAttacks & 0x7800000000000000) {
+				// in check/squares checked
+			} else {
+				moves.push_back(Move(color, true));
 			}
-			if (enemyAttacks & 0x7800000000000000) {
-				return;
-			}
-			moves.push_back(Move(color, side));
+
 		} else { // white
 			if ((friendlyPieces | enemyPieces) & 0x70) {
-				return;
+				// pieces blocking
+			} else if (enemyAttacks & 0x78) {
+				// in check/squares checked
+			} else {
+				moves.push_back(Move(color, true));
 			}
-			if (enemyAttacks & 0x78) {
-				return;
-			}
-			moves.push_back(Move(color, side));
 		}
 	}
 
 	// kingside
-	else {
+	if (canCastleKing) {
 		if (color) { // black
 			if ((friendlyPieces | enemyPieces) & 0x600000000000000) {
-				return;
+				// pieces blocking
+			} else if (enemyAttacks & 0xe00000000000000) {
+				// in check/squares checked
+			} else {
+				moves.push_back(Move(color, false));
 			}
-			if (enemyAttacks & 0xe00000000000000) {
-				return;
-			}
-			moves.push_back(Move(color, side));
 		} else { // white
 			if ((friendlyPieces | enemyPieces) & 0x6) {
-				return;
+				// pieces blocking
+			} else if (enemyAttacks & 0xe) {
+				// in check/squares checked
+			} else {
+				moves.push_back(Move(color, false));
 			}
-			if (enemyAttacks & 0xe) {
-				return;
-			}
-			moves.push_back(Move(color, side));
 		}
 	}
 }

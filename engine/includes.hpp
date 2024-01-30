@@ -36,3 +36,7 @@ using namespace std;
 
 #define TO_SQUARE(col, row) 8 * (row - '1') + 7 - (col - 'a')
 #define TO_ALGEBRA(sq) string(1, 'a' + (7 - (sq % 8))) + string(1, '1' + (sq / 8))
+#define BOLD "\e[1m"
+#define UNBOLD "\e[0m"
+#define GREEN "\x1B[32m"
+#define UNCOLOR "\x1B[0m"

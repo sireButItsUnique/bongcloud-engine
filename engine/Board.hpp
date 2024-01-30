@@ -7,6 +7,11 @@ class Board {
 public:
 	unsigned ll pieceBoards[12], colorBoards[2], attackBoards[2];
 	bool whiteQueenCastle, whiteKingCastle, blackQueenCastle, blackKingCastle;
+
+	/**
+	 * @brief who's turn it is to move and therefore generate moves, white=false; black=true
+	 *
+	 */
 	bool turn;
 	vector<Move> moves;
 

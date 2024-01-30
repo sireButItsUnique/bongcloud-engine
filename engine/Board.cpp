@@ -32,13 +32,27 @@ void Board::movePiece(string move) {
 	int from = TO_SQUARE(move[0], move[1]);
 	int to = TO_SQUARE(move[2], move[3]);
 
+	// castling checks
+	if (from == 0 || to == 0 || from == 3) {
+		whiteKingCastle = false;
+	}
+	if (from == 7 || to == 7 || from == 3) {
+		whiteQueenCastle = false;
+	}
+	if (from == 56 || to == 56 || from == 59) {
+		blackKingCastle = false;
+	}
+	if (from == 63 || to == 63 || from == 59) {
+		blackQueenCastle = false;
+	}
+
 	// white = false/evens, black = true/odds
 	unsigned ll fromMask = 1ULL << from;
 	unsigned ll toMask = 1ULL << to;
 	for (int i = turn; i < 12; i += 2) {
 
 		// rmv piece at from, add piece at to (color that's moving)
-		if (pieceBoards[i] != (pieceBoards[i] & ~fromMask)) {
+		if (pieceBoards[i] & fromMask) {
 			pieceBoards[i] &= ~fromMask;
 			pieceBoards[i] |= toMask;
 			break;
@@ -60,6 +74,20 @@ void Board::movePiece(string move) {
 
 void Board::movePiece(int from, int to) {
 
+	// castling checks
+	if (from == 0 || to == 0 || from == 3) {
+		whiteKingCastle = false;
+	}
+	if (from == 7 || to == 7 || from == 3) {
+		whiteQueenCastle = false;
+	}
+	if (from == 56 || to == 56 || from == 59) {
+		blackKingCastle = false;
+	}
+	if (from == 63 || to == 63 || from == 59) {
+		blackQueenCastle = false;
+	}
+
 	// white = false/evens, black = true/odds
 	unsigned ll fromMask = 1ULL << from;
 	unsigned ll toMask = 1ULL << to;
@@ -67,7 +95,7 @@ void Board::movePiece(int from, int to) {
 	for (int i = turn; i < 12; i += 2) {
 
 		// rmv piece at from, add piece at to (color that's moving)
-		if (pieceBoards[i] != (pieceBoards[i] & ~fromMask)) {
+		if (pieceBoards[i] & fromMask) {
 			pieceBoards[i] &= ~fromMask;
 			pieceBoards[i] |= toMask;
 			break;
@@ -88,6 +116,7 @@ void Board::movePiece(int from, int to) {
 }
 
 void Board::genAttackBoard(bool color, MoveGen *moveGen) {
+	attackBoards[color] = 0;
 	moveGen->genKingMovesA(pieceBoards[kingWhite + color], colorBoards[color], attackBoards[color]);
 	moveGen->genKnightMovesA(pieceBoards[knightWhite + color], colorBoards[color], attackBoards[color]);
 	moveGen->genBishopMovesA(pieceBoards[bishopWhite + color], colorBoards[color], colorBoards[!color], attackBoards[color]);
@@ -100,20 +129,29 @@ void Board::genMoves(MoveGen *moveGen) {
 	auto start = chrono::high_resolution_clock::now();
 	moves.clear();
 
+	genAttackBoard(!turn, moveGen);
 	moveGen->genKingMoves(pieceBoards[kingWhite + turn], colorBoards[turn], moves);
 	moveGen->genKnightMoves(pieceBoards[knightWhite + turn], colorBoards[turn], moves);
 	moveGen->genBishopMoves(pieceBoards[bishopWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
 	moveGen->genRookMoves(pieceBoards[rookWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
 	moveGen->genQueenMoves(pieceBoards[queenWhite + turn], colorBoards[turn], colorBoards[!turn], moves);
 	moveGen->genPawnMoves(pieceBoards[pawnWhite + turn], turn, colorBoards[turn], colorBoards[!turn], moves);
+
+	if (turn) {
+		moveGen->genCastleMoves(turn, blackKingCastle, blackQueenCastle, colorBoards[turn], colorBoards[!turn], attackBoards[!turn], moves);
+	} else {
+		moveGen->genCastleMoves(turn, whiteKingCastle, whiteQueenCastle, colorBoards[turn], colorBoards[!turn], attackBoards[!turn], moves);
+	}
+
 	auto end = chrono::high_resolution_clock::now();
 	double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 	time_taken *= 1e-9;
-	cout << "Generated " << moves.size() << " moves in " << fixed << time_taken << setprecision(9) << " secs\n";
+	cout << GREEN << "Generated " << moves.size() << " moves in " << fixed << time_taken << setprecision(9) << " secs\n" << UNCOLOR;
 }
 
 void Board::print(bool c) {
 	int i = 0;
+	cout << BOLD << "Board:\n" << UNBOLD;
 	for (int square = 63 * (!c); (c ? square < 64 : square >= 0); (c ? square++ : square--)) {
 
 		// check if there's a piece
@@ -132,10 +170,17 @@ void Board::print(bool c) {
 			cout << '\n';
 		i++;
 	}
+	cout << BOLD << "State:\n" << UNBOLD;
+	cout << (turn ? "Black to play" : "White to play") << endl;
+	cout << "White " << (whiteKingCastle ? "can" : "cannot") << " castle kingside\n";
+	cout << "White " << (whiteQueenCastle ? "can" : "cannot") << " castle queenside\n";
+	cout << "Black " << (blackKingCastle ? "can" : "cannot") << " castle kingside\n";
+	cout << "Black " << (blackQueenCastle ? "can" : "cannot") << " castle queenside\n";
 }
 
 void Board::printMoves() {
-	// e2e4 d7d5 e4d5 c7c6 d5c6 h7h6 c6b7 g7g6
+
+	cout << BOLD << "Pseudolegal Moves:\n" << UNBOLD;
 	for (int i = 0; i < moves.size(); i++) {
 		if (moves[i].isCastle()) {
 			cout << (moves[i].castleSide() ? "O-O-O" : "O-O");
