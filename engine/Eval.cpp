@@ -25,7 +25,7 @@ double Eval::getBoardEval(Board *board) {
 	res += 5 * __popcnt64(board->pieceBoards[rookWhite]);
 	res -= 5 * __popcnt64(board->pieceBoards[rookBlack]);
 	res += 9 * __popcnt64(board->pieceBoards[queenWhite]);
-	res -= 9 * __popcnt64(board->pieceBoards[pawnBlack]);
+	res -= 9 * __popcnt64(board->pieceBoards[queenBlack]);
 
 	// give slight edge to whoever's turn it is
 	res += (board->turn ? -0.1 : 0.1);
@@ -70,7 +70,7 @@ double Eval::getBoardEvalRec(Board *board, int ply, int &evaluated) {
 	return eval;
 }
 
-Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated) {
+Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool debug) {
 
 	// set up board + eval
 	auto start = chrono::high_resolution_clock::now();
@@ -111,9 +111,11 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated) {
 		}
 	}
 
-	auto end = chrono::high_resolution_clock::now();
-	double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-	time_taken *= 1e-9;
-	cout << GREEN << "Evaluated " << evaluated << " positions in " << fixed << time_taken << setprecision(9) << " secs\n" << UNCOLOR;
+	if (debug) {
+		auto end = chrono::high_resolution_clock::now();
+		double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+		time_taken *= 1e-9;
+		cout << GREEN << "Evaluated " << evaluated << " positions in " << fixed << time_taken << setprecision(9) << " secs\n" << UNCOLOR;
+	}
 	return res;
 }

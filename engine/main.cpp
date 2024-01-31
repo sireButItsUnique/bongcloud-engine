@@ -18,30 +18,54 @@ int main() {
 	Board *board = new Board(moveGen);
 
 	cin >> input;
-	while (input != "quit") {
+	while (true) {
+		if (input == "quit") {
+			return 0;
+		}
 
-		if (input == "eval") {
-			int tmp;
+		// lichess interface
+		if (input == "lichessmove") {
+			string move;
+			cin >> move;
+			board->movePiece(move);
+		} else if (input == "lichesseval") {
+			int tmp, ply = 4;
 			double eval;
-			Move bestMove = evaluator->getBestMove(board, 4, eval, tmp);
-
-			cout << BOLD << "Best Move:\n" << UNBOLD;
+			Move bestMove = evaluator->getBestMove(board, ply, eval, tmp);
 			cout << TO_ALGEBRA(bestMove.from()) << TO_ALGEBRA(bestMove.to()) << endl;
+		}
 
-			cout << BOLD << "Eval:\n" << UNBOLD;
-			cout << eval << endl;
-		} else {
-			if (input == "reset") {
-				board->setStartingPos();
+		// human interface
+		else {
+			if (input == "eval") {
+				int tmp, ply;
+				double eval;
+				cin >> ply;
+
+				if (ply) {
+					Move bestMove = evaluator->getBestMove(board, ply, eval, tmp, true);
+
+					cout << BOLD << "Best Move:\n" << UNBOLD;
+					cout << TO_ALGEBRA(bestMove.from()) << TO_ALGEBRA(bestMove.to()) << endl;
+				} else {
+					eval = evaluator->getBoardEval(board);
+				}
+
+				cout << BOLD << "Eval:\n" << UNBOLD;
+				cout << eval << endl;
 			} else {
-				board->movePiece(input);
+				if (input == "reset") {
+					board->setStartingPos();
+				} else {
+					board->movePiece(input);
+				}
+				board->genMoves(true);
+				board->print(white);
+				board->printMoves();
 			}
-			board->genMoves(true);
-			board->print(white);
-			board->printMoves();
 		}
 
 		cin >> input;
 	}
-	return 0;
+	return 1;
 }

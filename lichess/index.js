@@ -29,7 +29,7 @@ async function listenGame(gameId) {
 					if (state) {
 						console.log(state);
 
-						let engine = spawn("../engine/a", {
+						let engine = spawn("../engine.exe", {
 							stdio: ["pipe", "pipe", "pipe"],
 						});
 

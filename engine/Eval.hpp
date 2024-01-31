@@ -31,6 +31,7 @@ public:
 	 * @param ply
 	 * @param eval
 	 * @param evaluated how many nodes evaluated so far
+	 * @param debug print debug msgs
 	 */
-	Move getBestMove(Board *, int, double &, int &);
+	Move getBestMove(Board *, int, double &, int &, bool = false);
 };
