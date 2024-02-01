@@ -75,7 +75,6 @@ void Board::movePiece(Move *move) {
 	}
 
 	// normal move
-	cout << "MOVE PIECE: from " << move->from() << " to " << move->to() << endl;
 	movePiece(move->from(), move->to());
 }
 

@@ -11,7 +11,6 @@ NOTE NOTE NOTE NOTE
 -cannot make a promotion move on board
 */
 int main() {
-	setlocale(LC_ALL, "en_US.utf8");
 	string input;
 	MoveGen *moveGen = new MoveGen();
 	Eval *evaluator = new Eval();
@@ -35,6 +34,8 @@ int main() {
 			double eval;
 			Move bestMove = evaluator->getBestMove(board, ply, eval, tmp);
 			cout << bestMove.toAlgebra() << endl;
+		} else if (input == "lichessskip") {
+			continue;
 		}
 
 		// human interface
@@ -55,6 +56,8 @@ int main() {
 
 				cout << BOLD << "Eval:\n" << UNBOLD;
 				cout << eval << endl;
+			} else if (input == "print") {
+				board->print(white);
 			} else {
 				if (input == "reset") {
 					board->setStartingPos();
