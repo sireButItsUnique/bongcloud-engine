@@ -29,48 +29,54 @@ void Board::setStartingPos() {
 	blackQueenCastle = true;
 }
 
-void Board::movePiece(string move) {
-	int from = TO_SQUARE(move[0], move[1]);
-	int to = TO_SQUARE(move[2], move[3]);
+void Board::movePiece(Move *move) {
 
-	// castling checks
-	if (from == 0 || to == 0 || from == 3) {
-		whiteKingCastle = false;
-	}
-	if (from == 7 || to == 7 || from == 3) {
-		whiteQueenCastle = false;
-	}
-	if (from == 56 || to == 56 || from == 59) {
-		blackKingCastle = false;
-	}
-	if (from == 63 || to == 63 || from == 59) {
-		blackQueenCastle = false;
-	}
+	// castling check
+	if (move->isCastle()) {
 
-	// white = false/evens, black = true/odds
-	unsigned ll fromMask = 1ULL << from;
-	unsigned ll toMask = 1ULL << to;
-	for (int i = turn; i < 12; i += 2) {
-
-		// rmv piece at from, add piece at to (color that's moving)
-		if (pieceBoards[i] & fromMask) {
-			pieceBoards[i] &= ~fromMask;
-			pieceBoards[i] |= toMask;
-			break;
+		// queenside
+		if (move->castleSide()) {
+			if (turn) {
+				pieceBoards[kingBlack] ^= 0x2800000000000000;
+				pieceBoards[rookBlack] ^= 0x9000000000000000;
+			} else {
+				pieceBoards[kingWhite] ^= 0x28;
+				pieceBoards[rookWhite] ^= 0x90;
+			}
 		}
+		// kingside
+		else {
+			if (turn) {
+				pieceBoards[kingBlack] ^= 0xa00000000000000;
+				pieceBoards[rookBlack] ^= 0x500000000000000;
+			} else {
+				pieceBoards[kingWhite] ^= 0xa;
+				pieceBoards[rookWhite] ^= 0x5;
+			}
+		}
+		turn = !turn;
+		return;
 	}
-	for (int i = !turn; i < 12; i += 2) {
 
-		// rmv piece at to (oping color)
-		pieceBoards[i] &= ~toMask;
+	// promotion check
+	if (move->isPromotion()) {
+		pieceBoards[pawnWhite + turn] &= ~(1ULL << move->from());
+
+		// horse
+		if (move->promotionPiece()) {
+			pieceBoards[knightWhite + turn] |= ~(1ULL << move->to());
+		}
+		// queen
+		else {
+			pieceBoards[queenWhite + turn] |= ~(1ULL << move->to());
+		}
+		turn = !turn;
+		return;
 	}
 
-	// move piece in color boards
-	colorBoards[turn] &= ~fromMask;
-	colorBoards[turn] |= toMask;
-	colorBoards[!turn] &= ~toMask;
-
-	turn = !turn;
+	// normal move
+	cout << "MOVE PIECE: from " << move->from() << " to " << move->to() << endl;
+	movePiece(move->from(), move->to());
 }
 
 void Board::movePiece(int from, int to) {
@@ -200,14 +206,7 @@ void Board::printMoves() {
 
 	cout << BOLD << "Pseudolegal Moves:\n" << UNBOLD;
 	for (int i = 0; i < moves.size(); i++) {
-		if (moves[i].isCastle()) {
-			cout << (moves[i].castleSide() ? "O-O-O" : "O-O");
-		} else {
-			cout << TO_ALGEBRA(moves[i].from()) << TO_ALGEBRA(moves[i].to());
-			if (moves[i].isPromotion()) {
-				cout << "(" << (moves[i].promotionPiece() ? "knight" : "queen") << ")";
-			}
-		}
+		cout << moves[i].toAlgebra();
 		cout << " ";
 
 		if (i % 8 == 7) {

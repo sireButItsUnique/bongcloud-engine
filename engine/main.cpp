@@ -27,12 +27,14 @@ int main() {
 		if (input == "lichessmove") {
 			string move;
 			cin >> move;
-			board->movePiece(move);
+
+			Move *moveObj = new Move(move);
+			board->movePiece(moveObj);
 		} else if (input == "lichesseval") {
 			int tmp, ply = 4;
 			double eval;
 			Move bestMove = evaluator->getBestMove(board, ply, eval, tmp);
-			cout << TO_ALGEBRA(bestMove.from()) << TO_ALGEBRA(bestMove.to()) << endl;
+			cout << bestMove.toAlgebra() << endl;
 		}
 
 		// human interface
@@ -46,7 +48,7 @@ int main() {
 					Move bestMove = evaluator->getBestMove(board, ply, eval, tmp, true);
 
 					cout << BOLD << "Best Move:\n" << UNBOLD;
-					cout << TO_ALGEBRA(bestMove.from()) << TO_ALGEBRA(bestMove.to()) << endl;
+					cout << bestMove.toAlgebra() << endl;
 				} else {
 					eval = evaluator->getBoardEval(board);
 				}
@@ -57,7 +59,8 @@ int main() {
 				if (input == "reset") {
 					board->setStartingPos();
 				} else {
-					board->movePiece(input);
+					Move *moveObj = new Move(input);
+					board->movePiece(moveObj);
 				}
 				board->genMoves(true);
 				board->print(white);

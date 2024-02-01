@@ -338,7 +338,7 @@ void MoveGen::genCastleMoves(
 			} else if (enemyAttacks & 0x7800000000000000) {
 				// in check/squares checked
 			} else {
-				moves.push_back(Move(color, true));
+				moves.push_back(Move(true));
 			}
 
 		} else { // white
@@ -347,7 +347,7 @@ void MoveGen::genCastleMoves(
 			} else if (enemyAttacks & 0x78) {
 				// in check/squares checked
 			} else {
-				moves.push_back(Move(color, true));
+				moves.push_back(Move(true));
 			}
 		}
 	}
@@ -360,7 +360,7 @@ void MoveGen::genCastleMoves(
 			} else if (enemyAttacks & 0xe00000000000000) {
 				// in check/squares checked
 			} else {
-				moves.push_back(Move(color, false));
+				moves.push_back(Move(false));
 			}
 		} else { // white
 			if ((friendlyPieces | enemyPieces) & 0x6) {
@@ -368,7 +368,7 @@ void MoveGen::genCastleMoves(
 			} else if (enemyAttacks & 0xe) {
 				// in check/squares checked
 			} else {
-				moves.push_back(Move(color, false));
+				moves.push_back(Move(false));
 			}
 		}
 	}

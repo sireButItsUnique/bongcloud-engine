@@ -84,7 +84,6 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 		if (board->inCheck(board->turn)) {
 			eval = 0;
 		}
-		return eval;
 	}
 
 	// branch out to all moves

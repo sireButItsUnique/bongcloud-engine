@@ -1,11 +1,27 @@
 #include "Move.hpp"
 
-Move::Move(bool color, bool side) {
+Move::Move(bool side) {
 	data = 0;
-	if (color)
-		data |= 0x2000;
 	if (side)
 		data |= 0x1000;
+}
+
+Move::Move(string move) {
+	data = 0;
+	if (move == "O-O") {
+		return;
+	} else if (move == "O-O-O") {
+		data |= 0x1000;
+		return;
+	}
+
+	data |= (TO_SQUARE(move[0], move[1])) << 6;
+	data |= (TO_SQUARE(move[2], move[3]));
+	if (move.size() > 4) {
+		char piece = move[4];
+		data |= 0x8000;
+		data |= 0x4000 & ((piece == 'N') << 14);
+	}
 }
 
 Move::Move(int from, int to, bool piece) {
@@ -48,4 +64,14 @@ bool Move::isCastle() {
 
 bool Move::castleSide() {
 	return (data & 0x1000);
+}
+
+string Move::toAlgebra() {
+	if (this->isCastle()) {
+		return (this->castleSide() ? "O-O-O" : "O-O");
+	}
+	if (this->isPromotion()) {
+		return (TO_ALGEBRA(this->from()) + TO_ALGEBRA(this->to()) + (this->promotionPiece() ? "N" : "Q"));
+	}
+	return (TO_ALGEBRA(this->from()) + TO_ALGEBRA(this->to()));
 }

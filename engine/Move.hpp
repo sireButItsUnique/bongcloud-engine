@@ -24,10 +24,9 @@ public:
 	/**
 	 * @brief constructor for castle move
 	 *
-	 * @param color color that is castling, white = false; black = true
 	 * @param side which side castling occurs, kingside = false; queenside = true
 	 */
-	Move(bool, bool);
+	Move(bool);
 
 	/**
 	 * @brief constructor for basic move
@@ -36,6 +35,13 @@ public:
 	 * @param to to square
 	 */
 	Move(int, int);
+
+	/**
+	 * @brief constructor given algebraic notation
+	 *
+	 * @param move in algebraic notation
+	 */
+	Move(string);
 
 	/**
 	 * @brief constructor with raw data
@@ -89,4 +95,10 @@ public:
 	 * @return false = kingside
 	 */
 	bool castleSide();
+
+	/**
+	 * @brief returns algebraic move
+	 *
+	 */
+	string toAlgebra();
 };

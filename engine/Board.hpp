@@ -30,9 +30,9 @@ public:
 	/**
 	 * @brief move piece in standard piece bitboards
 	 *
-	 * @param move algebraic chess notation of piece movement (e.g. e2e4)
+	 * @param move pointer to move object
 	 */
-	void movePiece(string);
+	void movePiece(Move *);
 
 	/**
 	 * @brief move piece in standard piece bitboards
