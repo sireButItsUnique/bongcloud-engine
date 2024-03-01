@@ -6,6 +6,7 @@ Move::Move(bool side) {
 		data |= 0x1000;
 }
 
+// need to make e8g8 into O-O if its castle (...)
 Move::Move(string move) {
 	data = 0;
 	if (move == "O-O") {
@@ -66,9 +67,17 @@ bool Move::castleSide() {
 	return (data & 0x1000);
 }
 
-string Move::toAlgebra() {
+string Move::toAlgebra(bool debug, bool color) {
 	if (this->isCastle()) {
-		return (this->castleSide() ? "O-O-O" : "O-O");
+		if (debug) {
+			return (this->castleSide() ? "O-O-O" : "O-O");
+		} else {
+			if (color == black) {
+				return (this->castleSide() ? "e8c8" : "e8g8");
+			} else {
+				return (this->castleSide() ? "e1c1" : "e1c1");
+			}
+		}
 	}
 	if (this->isPromotion()) {
 		return (TO_ALGEBRA(this->from()) + TO_ALGEBRA(this->to()) + (this->promotionPiece() ? "N" : "Q"));

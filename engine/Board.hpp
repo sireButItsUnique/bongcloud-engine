@@ -28,6 +28,12 @@ public:
 	void setStartingPos();
 
 	/**
+	 * @brief move piece given wtv lichess gives -> have to make modifications
+	 *
+	 * @param move move in string
+	 */
+	void movePiece(string);
+	/**
 	 * @brief move piece in standard piece bitboards
 	 *
 	 * @param move pointer to move object

@@ -26,14 +26,12 @@ int main() {
 		if (input == "lichessmove") {
 			string move;
 			cin >> move;
-
-			Move *moveObj = new Move(move);
-			board->movePiece(moveObj);
+			board->movePiece(move);
 		} else if (input == "lichesseval") {
 			int tmp, ply = 4;
 			double eval;
 			Move bestMove = evaluator->getBestMove(board, ply, eval, tmp);
-			cout << bestMove.toAlgebra() << endl;
+			cout << "enginemove " << bestMove.toAlgebra(true, board->turn) << " " << endl;
 		} else if (input == "lichessskip") {
 			continue;
 		}

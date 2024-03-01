@@ -3,7 +3,8 @@ const axios = require("axios");
 const { spawn } = require("child_process");
 require("dotenv").config();
 
-async function listenGame(gameId) {
+async function listenGame(gameId, color) {
+	// init engine
 	let engine = spawn("../engine.exe", {
 		stdio: ["pipe", "pipe", "pipe"],
 	});
@@ -12,13 +13,36 @@ async function listenGame(gameId) {
 		console.log(`${gameId} exited with code ${code}`);
 	});
 
+	// engine move output
 	engine.stdout.on("data", (data) => {
 		data = data.toString("utf-8");
 		if (data.trim()) {
-			console.log("engine says " + data);
+			let terms = data.split(" ");
+			if (terms[0] != "enginemove") {
+				console.log(data);
+			}
+
+			// engine wants to play a move
+			if (terms[0] == "enginemove") {
+				console.log(`/api/board/game/${gameId}/move/${terms[1]}`);
+				axios
+					.post(
+						`https://lichess.org/api/bot/game/${gameId}/move/${terms[1]}`,
+						{},
+						{
+							headers: {
+								Authorization: `Bearer ${process.env.API_TOKEN}`,
+							},
+						}
+					)
+					.catch((err) => {
+						console.log(err.response.data);
+					});
+			}
 		}
 	});
 
+	// game data stream
 	let req = https.request(
 		{
 			hostname: "lichess.org",
@@ -44,8 +68,36 @@ async function listenGame(gameId) {
 					if (state) {
 						console.log(state);
 
-						engine.stdin.write("lichessmove e2e4 lichesseval");
-						engine.stdin.end();
+						// game end
+						if (state.status != "started") {
+							engine.stdin.end("quit ");
+							return;
+						}
+
+						// new move
+						let moves = state.moves.split(" ");
+						console.log(moves);
+						if (state.moves != "") {
+							engine.stdin.write(
+								`lichessmove ${moves[moves.length - 1]} print `
+							);
+						}
+
+						// determine if its the engines turn to play
+						if (
+							color == "black" &&
+							moves.length % 2 == 1 &&
+							moves[0] != ""
+						) {
+							console.log("eval requested");
+							engine.stdin.write("lichesseval ");
+						} else if (
+							color == "white" &&
+							(moves.length % 2 == 0 || moves[0] == "")
+						) {
+							console.log("eval requested");
+							engine.stdin.write("lichesseval ");
+						}
 					}
 				}
 			});
@@ -70,7 +122,9 @@ async function listenEvents() {
 				let json = data.toString("utf-8");
 				if (json.trim()) {
 					json = JSON.parse(json);
-					console.log(json.type);
+					console.log(json);
+
+					// challenge issued
 					if (json.type == "challenge") {
 						axios.post(
 							`https://lichess.org/api/challenge/${json.challenge.id}/accept`,
@@ -83,6 +137,7 @@ async function listenEvents() {
 						);
 					}
 
+					// accept challenge
 					if (json.type == "gameStart") {
 						listenGame(json.game.gameId, json.game.color);
 					}
@@ -94,26 +149,26 @@ async function listenEvents() {
 	req.end();
 }
 
-// listenEvents();
+listenEvents();
 
 // weird rules to use for engine:
 // spawn engine ONCE
 // do NOT call writeable.end() until game ends
-let engine = spawn("../engine.exe");
+// let engine = spawn("../engine.exe");
 
-engine.on("exit", (code, signal) => {
-	console.log(`${gameId} exited with code ${code}`);
-});
+// engine.on("exit", (code, signal) => {
+// 	console.log(`${gameId} exited with code ${code}`);
+// });
 
-engine.stdout.on("data", (data) => {
-	data = data.toString("utf-8");
-	if (data.trim()) {
-		console.log("engine says " + data);
-	}
-});
+// engine.stdout.on("data", (data) => {
+// 	data = data.toString("utf-8");
+// 	if (data.trim()) {
+// 		console.log("engine says " + data);
+// 	}
+// });
 
-engine.stdin.write("lichessmove e2e4 print");
-engine.stdin.write(" ");
+// engine.stdin.write("lichessmove e2e4 print");
+// engine.stdin.write(" ");
 
-engine.stdin.write("lichessmove g8h6 print lichesseval");
-engine.stdin.write(" ");
+// engine.stdin.write("lichessmove g8h6 print lichesseval");
+// engine.stdin.write(" ");

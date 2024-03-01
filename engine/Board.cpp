@@ -29,6 +29,21 @@ void Board::setStartingPos() {
 	blackQueenCastle = true;
 }
 
+void Board::movePiece(string move) {
+	Move *moveObj;
+	if (move == "e1g1" && whiteKingCastle) {
+		moveObj = new Move(false);
+	} else if (move == "e8g8" && blackKingCastle) {
+		moveObj = new Move(false);
+	} else if (move == "e1c1" && whiteQueenCastle) {
+		moveObj = new Move(true);
+	} else if (move == "e8c8" && blackQueenCastle) {
+		moveObj = new Move(true);
+	} else {
+		moveObj = new Move(move);
+	}
+	movePiece(moveObj);
+}
 void Board::movePiece(Move *move) {
 
 	// castling check
@@ -39,9 +54,17 @@ void Board::movePiece(Move *move) {
 			if (turn) {
 				pieceBoards[kingBlack] ^= 0x2800000000000000;
 				pieceBoards[rookBlack] ^= 0x9000000000000000;
+				colorBoards[black] ^= 0x2800000000000000;
+				colorBoards[black] ^= 0x9000000000000000;
+				blackKingCastle = false;
+				blackQueenCastle = false;
 			} else {
 				pieceBoards[kingWhite] ^= 0x28;
 				pieceBoards[rookWhite] ^= 0x90;
+				colorBoards[white] ^= 0x28;
+				colorBoards[white] ^= 0x90;
+				whiteKingCastle = false;
+				whiteQueenCastle = false;
 			}
 		}
 		// kingside
@@ -49,9 +72,17 @@ void Board::movePiece(Move *move) {
 			if (turn) {
 				pieceBoards[kingBlack] ^= 0xa00000000000000;
 				pieceBoards[rookBlack] ^= 0x500000000000000;
+				colorBoards[black] ^= 0xa00000000000000;
+				colorBoards[black] ^= 0x500000000000000;
+				blackKingCastle = false;
+				blackQueenCastle = false;
 			} else {
 				pieceBoards[kingWhite] ^= 0xa;
 				pieceBoards[rookWhite] ^= 0x5;
+				colorBoards[white] ^= 0xa;
+				colorBoards[white] ^= 0x5;
+				whiteKingCastle = false;
+				whiteQueenCastle = false;
 			}
 		}
 		turn = !turn;
@@ -80,7 +111,7 @@ void Board::movePiece(Move *move) {
 
 void Board::movePiece(int from, int to) {
 
-	// castling checks
+	// diable castling checks
 	if (from == 0 || to == 0 || from == 3) {
 		whiteKingCastle = false;
 	}
