@@ -15,10 +15,23 @@ public:
 	double getBoardEval(Board *);
 
 	/**
+	 * @brief returns eval after finishing all captures to avoid miscaulculations
+	 *
+	 * @param board
+	 * @param alpha
+	 * @param beta
+	 * @param evaluated
+	 * @return double
+	 */
+	double finishCaptures(Board *, double, double, int &);
+
+	/**
 	 * @brief Get the eval of the board, taking future moves into account
 	 *
 	 * @param board
 	 * @param ply
+	 * @param alpha
+	 * @param beta
 	 * @param evaluated how many nodes evaluated so far
 	 * @return eval, negative = black advantage, positive = white advantage
 	 */

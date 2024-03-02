@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <chrono>
 #include <intrin.h>
 #include <iomanip>
