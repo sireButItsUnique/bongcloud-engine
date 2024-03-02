@@ -22,7 +22,7 @@ public:
 	 * @param evaluated how many nodes evaluated so far
 	 * @return eval, negative = black advantage, positive = white advantage
 	 */
-	double getBoardEvalRec(Board *, int, int &);
+	double getBoardEvalRec(Board *, int, double, double, int &);
 
 	/**
 	 * @brief Get the best move

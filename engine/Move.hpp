@@ -102,5 +102,5 @@ public:
 	 * @param debug true = is debug, false = for engine
 	 * @param color only needed for engine, garbage otherwise
 	 */
-	string toAlgebra(bool = true, bool = true);
+	string toAlgebra(bool = false, bool = true);
 };

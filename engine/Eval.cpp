@@ -33,8 +33,9 @@ double Eval::getBoardEval(Board *board) {
 	return res;
 }
 
-double Eval::getBoardEvalRec(Board *board, int ply, int &evaluated) {
+double Eval::getBoardEvalRec(Board *board, int ply, double alpha, double beta, int &evaluated) {
 
+	// return heurestic eval
 	evaluated++;
 	if (ply <= 0) {
 		return getBoardEval(board);
@@ -46,7 +47,7 @@ double Eval::getBoardEvalRec(Board *board, int ply, int &evaluated) {
 
 	// stalemate check
 	if (!board->moves.size()) {
-		if (board->inCheck(board->turn)) {
+		if (!board->inCheck(board->turn)) {
 			eval = 0;
 		}
 		return eval;
@@ -59,12 +60,24 @@ double Eval::getBoardEvalRec(Board *board, int ply, int &evaluated) {
 
 		// make it good for black
 		if (board->turn) {
-			eval = min(eval, getBoardEvalRec(newBoard, ply - 1, evaluated));
+			eval = min(eval, getBoardEvalRec(newBoard, ply - 1, alpha, beta, evaluated));
+
+			// prune if move is too good -> white has a better move last ply
+			if (eval < alpha) {
+				return eval;
+			}
+			beta = min(beta, eval);
 		}
 
 		// make it good for white
 		else {
-			eval = max(eval, getBoardEvalRec(newBoard, ply - 1, evaluated));
+			eval = max(eval, getBoardEvalRec(newBoard, ply - 1, alpha, beta, evaluated));
+
+			// prune if move is too good -> black has a better move last ply
+			if (eval > beta) {
+				return eval;
+			}
+			alpha = max(alpha, eval);
 		}
 	}
 	return eval;
@@ -81,19 +94,21 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 
 	// stalemate check
 	if (!board->moves.size()) {
-		if (board->inCheck(board->turn)) {
+		if (!board->inCheck(board->turn)) {
 			eval = 0;
 		}
 	}
 
 	// branch out to all moves
+	double alpha = -1 * numeric_limits<double>::infinity();
+	double beta = numeric_limits<double>::infinity();
 	for (Move &move : board->moves) {
 		Board *newBoard = new Board(*board);
 		newBoard->movePiece(move.from(), move.to());
 
 		// make it good for black
 		if (board->turn) {
-			double moveEval = getBoardEvalRec(newBoard, ply - 1, evaluated);
+			double moveEval = getBoardEvalRec(newBoard, ply - 1, alpha, beta, evaluated);
 			if (eval > moveEval) {
 				eval = moveEval;
 				res = move;
@@ -102,7 +117,7 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 
 		// make it good for white
 		else {
-			double moveEval = getBoardEvalRec(newBoard, ply - 1, evaluated);
+			double moveEval = getBoardEvalRec(newBoard, ply - 1, alpha, beta, evaluated);
 			if (eval < moveEval) {
 				eval = moveEval;
 				res = move;

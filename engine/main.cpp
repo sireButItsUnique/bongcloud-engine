@@ -5,11 +5,6 @@
 
 using namespace std;
 
-/*
-NOTE NOTE NOTE NOTE
--cannot make a castle move on board
--cannot make a promotion move on board
-*/
 int main() {
 	string input;
 	MoveGen *moveGen = new MoveGen();
@@ -31,7 +26,7 @@ int main() {
 			int tmp, ply = 4;
 			double eval;
 			Move bestMove = evaluator->getBestMove(board, ply, eval, tmp);
-			cout << "enginemove " << bestMove.toAlgebra(true, board->turn) << " " << endl;
+			cout << "enginemove " << bestMove.toAlgebra(false, board->turn) << " " << endl;
 		} else if (input == "lichessskip") {
 			continue;
 		}
@@ -47,7 +42,7 @@ int main() {
 					Move bestMove = evaluator->getBestMove(board, ply, eval, tmp, true);
 
 					cout << BOLD << "Best Move:\n" << UNBOLD;
-					cout << bestMove.toAlgebra() << endl;
+					cout << bestMove.toAlgebra(true) << endl;
 				} else {
 					eval = evaluator->getBoardEval(board);
 				}
