@@ -6,9 +6,10 @@ Move::Move(bool side) {
 		data |= 0x1000;
 }
 
-// need to make e8g8 into O-O if its castle (...)
 Move::Move(string move) {
 	data = 0;
+
+	// castling
 	if (move == "O-O") {
 		return;
 	} else if (move == "O-O-O") {
@@ -16,8 +17,11 @@ Move::Move(string move) {
 		return;
 	}
 
+	// position
 	data |= (TO_SQUARE(move[0], move[1])) << 6;
 	data |= (TO_SQUARE(move[2], move[3]));
+
+	// promotion
 	if (move.size() > 4) {
 		char piece = move[4];
 		data |= 0x8000;

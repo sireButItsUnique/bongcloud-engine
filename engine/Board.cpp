@@ -30,18 +30,20 @@ void Board::setStartingPos() {
 }
 
 void Board::movePiece(string move) {
-	Move *moveObj;
+
+	// castling check
 	if (move == "e1g1" && whiteKingCastle) {
-		moveObj = new Move(false);
+		move = "O-O";
 	} else if (move == "e8g8" && blackKingCastle) {
-		moveObj = new Move(false);
+		move = "O-O";
 	} else if (move == "e1c1" && whiteQueenCastle) {
-		moveObj = new Move(true);
+		move = "O-O-O";
 	} else if (move == "e8c8" && blackQueenCastle) {
-		moveObj = new Move(true);
-	} else {
-		moveObj = new Move(move);
+		move = "O-O-O";
 	}
+
+	// proceed as usual
+	Move *moveObj = new Move(move);
 	movePiece(moveObj);
 }
 void Board::movePiece(Move *move) {
@@ -95,11 +97,11 @@ void Board::movePiece(Move *move) {
 
 		// horse
 		if (move->promotionPiece()) {
-			pieceBoards[knightWhite + turn] |= ~(1ULL << move->to());
+			pieceBoards[knightWhite + turn] |= (1ULL << move->to());
 		}
 		// queen
 		else {
-			pieceBoards[queenWhite + turn] |= ~(1ULL << move->to());
+			pieceBoards[queenWhite + turn] |= (1ULL << move->to());
 		}
 		turn = !turn;
 		return;
