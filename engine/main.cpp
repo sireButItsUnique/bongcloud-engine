@@ -27,12 +27,10 @@ int main() {
 			double eval;
 			Move bestMove = evaluator->getBestMove(board, ply, eval, tmp);
 			if (bestMove.from() == 16 && bestMove.to() == 16) {
-				cout << "enginemove itFuckedItself " << endl;
+				cout << "enginemove itFuckedItself " << eval << " " << endl;
 			} else {
-				cout << "enginemove " << bestMove.toAlgebra(false, board->turn) << " " << endl;
+				cout << "enginemove " << bestMove.toAlgebra(false, board->turn) << " " << eval << " " << endl;
 			}
-
-			cout << "engineeval " << eval << " " << endl;
 		} else if (input == "lichessskip") {
 			continue;
 		}

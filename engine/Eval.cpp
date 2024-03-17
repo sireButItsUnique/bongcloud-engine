@@ -27,9 +27,6 @@ double Eval::getBoardEval(Board *board) {
 	res += 9 * __popcnt64(board->pieceBoards[queenWhite]);
 	res -= 9 * __popcnt64(board->pieceBoards[queenBlack]);
 
-	// give slight edge to whoever's turn it is
-	res += (board->turn ? -0.1 : 0.1);
-
 	return res;
 }
 

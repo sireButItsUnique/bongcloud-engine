@@ -27,6 +27,22 @@ async function listenGame(gameId, color) {
 				console.log(`/api/board/game/${gameId}/move/${terms[1]}`);
 				axios
 					.post(
+						`https://lichess.org/api/bot/game/${gameId}/chat/`,
+						{
+							room: "player",
+							text: `${terms[2]}`,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${process.env.API_TOKEN}`,
+							},
+						}
+					)
+					.catch((err) => {
+						console.error(err.response.data);
+					});
+				axios
+					.post(
 						`https://lichess.org/api/bot/game/${gameId}/move/${terms[1]}`,
 						{},
 						{
@@ -40,22 +56,6 @@ async function listenGame(gameId, color) {
 					});
 			} else if (terms[0] == "engineeval") {
 				console.log("eval: " << terms[1]);
-				axios
-					.post(
-						`https://lichess.org/api/bot/game/${gameId}/chat/`,
-						{
-							room: "player",
-							text: `${terms[1]}`,
-						},
-						{
-							headers: {
-								Authorization: `Bearer ${process.env.API_TOKEN}`,
-							},
-						}
-					)
-					.catch((err) => {
-						console.error(err.response.data);
-					});
 			}
 		}
 	});
