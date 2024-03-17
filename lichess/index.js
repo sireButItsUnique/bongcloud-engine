@@ -18,7 +18,7 @@ async function listenGame(gameId, color) {
 		data = data.toString("utf-8");
 		if (data.trim()) {
 			let terms = data.split(" ");
-			if (terms[0] != "enginemove") {
+			if (terms[0] != "enginemove" && terms[0] != "engineeval") {
 				console.log(data);
 			}
 
@@ -36,7 +36,25 @@ async function listenGame(gameId, color) {
 						}
 					)
 					.catch((err) => {
-						console.log(err.response.data);
+						console.error(err.response.data);
+					});
+			} else if (terms[0] == "engineeval") {
+				console.log("eval: " << terms[1]);
+				axios
+					.post(
+						`https://lichess.org/api/bot/game/${gameId}/chat/`,
+						{
+							room: "player",
+							text: `${terms[1]}`,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${process.env.API_TOKEN}`,
+							},
+						}
+					)
+					.catch((err) => {
+						console.error(err.response.data);
 					});
 			}
 		}
@@ -66,8 +84,6 @@ async function listenGame(gameId, color) {
 					}
 
 					if (state) {
-						console.log(state);
-
 						// game end
 						if (state.status != "started") {
 							engine.stdin.end("quit ");
@@ -76,7 +92,6 @@ async function listenGame(gameId, color) {
 
 						// new move
 						let moves = state.moves.split(" ");
-						console.log(moves);
 						if (state.moves != "") {
 							engine.stdin.write(
 								`lichessmove ${moves[moves.length - 1]} print `
@@ -122,7 +137,7 @@ async function listenEvents() {
 				let json = data.toString("utf-8");
 				if (json.trim()) {
 					json = JSON.parse(json);
-					console.log(json);
+					console.log(json.type);
 
 					// challenge issued
 					if (json.type == "challenge") {

@@ -79,7 +79,7 @@ string Move::toAlgebra(bool debug, bool color) {
 			if (color == black) {
 				return (this->castleSide() ? "e8c8" : "e8g8");
 			} else {
-				return (this->castleSide() ? "e1c1" : "e1c1");
+				return (this->castleSide() ? "e1c1" : "e1g1");
 			}
 		}
 	}

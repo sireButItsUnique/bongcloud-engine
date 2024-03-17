@@ -172,12 +172,7 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 	eval = (board->turn ? 1 : -1) * numeric_limits<double>::infinity();
 	Move res = Move(16, 16);
 
-	// stalemate check
-	if (!board->moves.size()) {
-		if (!board->inCheck(board->turn)) {
-			eval = 0;
-		}
-	}
+	// stalemate check not needed bc game is over if no more moves
 
 	// branch out to all moves
 	double alpha = -1 * numeric_limits<double>::infinity();
@@ -189,7 +184,7 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 		// make it good for black
 		if (board->turn) {
 			double moveEval = getBoardEvalRec(newBoard, ply - 1, alpha, beta, evaluated);
-			if (eval > moveEval) {
+			if (eval >= moveEval) {
 				eval = moveEval;
 				res = move;
 			}
@@ -198,7 +193,7 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 		// make it good for white
 		else {
 			double moveEval = getBoardEvalRec(newBoard, ply - 1, alpha, beta, evaluated);
-			if (eval < moveEval) {
+			if (eval <= moveEval) {
 				eval = moveEval;
 				res = move;
 			}
