@@ -30,22 +30,8 @@ double Eval::getBoardEval(Board *board) {
 	return res;
 }
 
-double Eval::finishCaptures(Board *board, double alpha, double beta, int &evaluated) {
+double Eval::finishCaptures(Board *board, double eval, double alpha, double beta, int &evaluated) {
 	evaluated++;
-
-	// get eval of board before captures -> dont force the dude to make bad captures
-	double eval = getBoardEval(board);
-	if (board->turn) {
-		if (eval <= alpha) {
-			return eval;
-		}
-		beta = min(eval, beta);
-	} else {
-		if (eval >= beta) {
-			return eval;
-		}
-		alpha = max(eval, alpha);
-	}
 
 	// set up board + eval
 	board->genMoves();
@@ -60,12 +46,25 @@ double Eval::finishCaptures(Board *board, double alpha, double beta, int &evalua
 		return eval;
 	}
 
+	// treat cur position as valid end node & prune accordingly
+	if (board->turn) {
+		if (eval <= alpha) {
+			return eval;
+		}
+		beta = min(eval, beta);
+	} else {
+		if (eval >= beta) {
+			return eval;
+		}
+		alpha = max(eval, alpha);
+	}
+
 	// order all moves by evaling them right now (iterative deepening)
 	vector<pair<float, Board *>> moves;
 	for (int i = 0; i < board->moves.size(); i++) {
 
 		// contains capture
-		if (board->pieceBoards[!board->turn] & (1ULL << board->moves[i].to())) {
+		if (board->colorBoards[!board->turn] & (1ULL << board->moves[i].to())) {
 			Board *newBoard = new Board(*board);
 			newBoard->movePiece(board->moves[i].from(), board->moves[i].to());
 			moves.push_back({getBoardEval(newBoard), newBoard});
@@ -78,7 +77,7 @@ double Eval::finishCaptures(Board *board, double alpha, double beta, int &evalua
 
 		// make it good for black -> start w/ worst moves
 		for (int i = 0; i < moves.size(); i++) {
-			eval = min(eval, finishCaptures(moves[i].second, alpha, beta, evaluated));
+			eval = min(eval, finishCaptures(moves[i].second, moves[i].first, alpha, beta, evaluated));
 
 			// prune if move is too good -> white has a better move last ply
 			if (eval <= alpha) {
@@ -90,7 +89,7 @@ double Eval::finishCaptures(Board *board, double alpha, double beta, int &evalua
 
 		// make it good for white -> start w/ best ones
 		for (int i = moves.size() - 1; i >= 0; i--) {
-			eval = max(eval, finishCaptures(moves[i].second, alpha, beta, evaluated));
+			eval = max(eval, finishCaptures(moves[i].second, moves[i].first, alpha, beta, evaluated));
 
 			// prune if move is too good -> black has a better move last ply
 			if (eval >= beta) {
@@ -107,7 +106,7 @@ double Eval::getBoardEvalRec(Board *board, int ply, double alpha, double beta, i
 	// return heurestic eval
 	evaluated++;
 	if (ply <= 0) {
-		return finishCaptures(board, alpha, beta, evaluated);
+		return finishCaptures(board, getBoardEval(board), alpha, beta, evaluated);
 	}
 
 	// set up board + eval

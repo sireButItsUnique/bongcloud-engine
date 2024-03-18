@@ -18,12 +18,13 @@ public:
 	 * @brief returns eval after finishing all captures to avoid miscaulculations
 	 *
 	 * @param board
+	 * @param eval
 	 * @param alpha
 	 * @param beta
 	 * @param evaluated
 	 * @return double
 	 */
-	double finishCaptures(Board *, double, double, int &);
+	double finishCaptures(Board *, double, double, double, int &);
 
 	/**
 	 * @brief Get the eval of the board, taking future moves into account
