@@ -1,4 +1,5 @@
 #pragma once
+#include "Eval.hpp"
 #include "includes.hpp"
 
 class Move {
@@ -63,6 +64,14 @@ public:
 	 * @return uint8_t
 	 */
 	uint8_t to();
+
+	/**
+	 * @brief returns whether or not it's legal
+	 *
+	 * @return true
+	 * @return false
+	 */
+	bool isLegal(Board *);
 
 	/**
 	 * @brief returns whether or not the move has a promotion flag

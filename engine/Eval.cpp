@@ -198,11 +198,18 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 	double alpha = -1 * DOUBLE_INF;
 	double beta = DOUBLE_INF;
 	for (Move &move : board->moves) {
+
+		// dont play if it mates itself
+		if (!move.isLegal(board)) {
+			continue;
+		}
+
 		Board *newBoard = new Board(*board);
 		newBoard->movePiece(move.from(), move.to());
-
 		// make it good for black
 		if (board->turn) {
+
+			// search move further
 			double moveEval = getBoardEvalRec(newBoard, ply - 1, alpha, beta, evaluated);
 			if (eval >= moveEval) {
 				eval = moveEval;
@@ -212,6 +219,8 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 
 		// make it good for white
 		else {
+
+			// search move further
 			double moveEval = getBoardEvalRec(newBoard, ply - 1, alpha, beta, evaluated);
 			if (eval <= moveEval) {
 				eval = moveEval;
