@@ -24,7 +24,9 @@ async function listenGame(gameId, color) {
 
 			// engine wants to play a move
 			if (terms[0] == "enginemove") {
-				console.log(`/api/board/game/${gameId}/move/${terms[1]}`);
+				console.log(
+					`engine plays /api/board/game/${gameId}/move/${terms[1]}`
+				);
 				axios
 					.post(
 						`https://lichess.org/api/bot/game/${gameId}/chat/`,
@@ -71,7 +73,7 @@ async function listenGame(gameId, color) {
 						console.error(err.response.data);
 					});
 			} else if (terms[0] == "engineeval") {
-				console.log("eval: " << terms[1]);
+				console.log("eval: " + terms[1]);
 			}
 		}
 	});
@@ -89,11 +91,47 @@ async function listenGame(gameId, color) {
 		(res) => {
 			res.on("data", (data) => {
 				let json = data.toString("utf-8");
-				if (json.trim()) {
-					json = JSON.parse(json);
+				if (!json.trim()) {
+					return;
+				}
+				console.log("ORG:");
+				console.log(json);
+				let entries = json.split("\n");
 
+				for (let i = 0; i < entries.length; i++) {
+					if (!entries[i].trim()) {
+						continue;
+					}
+					console.log("ENTRIES:");
+					console.log(entries[i]);
+					json = JSON.parse(entries[i]);
 					let state = false;
-					if (json.type == "gameFull") {
+
+					// chat reply
+					if (
+						json.type == "chatLine" &&
+						json.username != "sireButItsAnEngine"
+					) {
+						axios
+							.post(
+								`https://lichess.org/api/bot/game/${gameId}/chat/`,
+								{
+									room: "player",
+									text: "fuck off im tryna think",
+								},
+								{
+									headers: {
+										Authorization: `Bearer ${process.env.API_TOKEN}`,
+									},
+								}
+							)
+							.catch((err) => {
+								console.error(err.response.data);
+							});
+					}
+
+					// doing game state only
+					else if (json.type == "gameFull") {
 						state = json.state;
 					} else if (json.type == "gameState") {
 						state = json;
@@ -120,13 +158,11 @@ async function listenGame(gameId, color) {
 							moves.length % 2 == 1 &&
 							moves[0] != ""
 						) {
-							console.log("eval requested");
 							engine.stdin.write("lichesseval ");
 						} else if (
 							color == "white" &&
 							(moves.length % 2 == 0 || moves[0] == "")
 						) {
-							console.log("eval requested");
 							engine.stdin.write("lichesseval ");
 						}
 					}
