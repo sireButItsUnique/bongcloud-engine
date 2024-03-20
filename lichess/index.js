@@ -43,6 +43,22 @@ async function listenGame(gameId, color) {
 					});
 				axios
 					.post(
+						`https://lichess.org/api/bot/game/${gameId}/chat/`,
+						{
+							room: "spectator",
+							text: `${terms[2]}`,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${process.env.API_TOKEN}`,
+							},
+						}
+					)
+					.catch((err) => {
+						console.error(err.response.data);
+					});
+				axios
+					.post(
 						`https://lichess.org/api/bot/game/${gameId}/move/${terms[1]}`,
 						{},
 						{
