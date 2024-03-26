@@ -196,6 +196,21 @@ bool Board::inCheck(bool color) {
 	return (this->colorBoards[kingWhite + color] & this->attackBoards[!color]);
 }
 
+bool Board::isMoveLegal(Move *move) {
+	Board *tmp = new Board(*this);
+	tmp->movePiece(move);
+	tmp->genMoves();
+
+	for (Move &move : this->moves) {
+		Board *newBoard = new Board(*tmp);
+		newBoard->movePiece(move.from(), move.to());
+		if (!newBoard->pieceBoards[kingWhite + this->turn]) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void Board::print(bool c) {
 	int idx = 0;
 	int sqr = 0;

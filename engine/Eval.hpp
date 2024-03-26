@@ -1,5 +1,6 @@
 #pragma once
 #include "Board.hpp"
+#include "Move.hpp"
 #include "includes.hpp"
 
 class Eval {

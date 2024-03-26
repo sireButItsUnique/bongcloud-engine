@@ -189,8 +189,8 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 	auto start = chrono::high_resolution_clock::now();
 	evaluated = 1;
 	board->genMoves();
-	eval = (board->turn ? 1 : -1) * DOUBLE_INF;
 	Move res = Move(16, 16);
+	eval = (board->turn ? 1 : -1) * DOUBLE_INF;
 
 	// stalemate check not needed bc game is over if no more moves
 
@@ -200,9 +200,9 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 	for (Move &move : board->moves) {
 
 		// dont play if it mates itself
-		if (!move.isLegal(board)) {
-			continue;
-		}
+		// if (!board->isMoveLegal(&move)) {
+		// 	continue;
+		// }
 
 		Board *newBoard = new Board(*board);
 		newBoard->movePiece(move.from(), move.to());

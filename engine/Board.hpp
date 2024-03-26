@@ -73,6 +73,13 @@ public:
 	bool inCheck(bool);
 
 	/**
+	 * @brief returns whether or not it's legal
+	 *
+	 * @param Move move to be played on this board
+	 */
+	bool isMoveLegal(Move *);
+
+	/**
 	 * @brief debug only, prints the board
 	 *
 	 * @param color color of perspective, white = false; black = true
