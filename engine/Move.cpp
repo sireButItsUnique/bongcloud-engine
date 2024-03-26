@@ -88,18 +88,3 @@ string Move::toAlgebra(bool debug, bool color) {
 	}
 	return (TO_ALGEBRA(this->from()) + TO_ALGEBRA(this->to()));
 }
-
-bool Move::isLegal(Board *board) {
-	Board *tmp = new Board(*board);
-	tmp->movePiece(this);
-	tmp->genMoves();
-
-	for (Move &move : board->moves) {
-		Board *newBoard = new Board(*board);
-		newBoard->movePiece(move.from(), move.to());
-		if (!newBoard->pieceBoards[kingWhite] || !newBoard->pieceBoards[kingBlack]) {
-			return false;
-		}
-	}
-	return true;
-}

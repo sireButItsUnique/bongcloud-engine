@@ -55,6 +55,11 @@ int main() {
 				cout << eval << endl;
 			} else if (input == "print") {
 				board->print(white);
+			} else if (input == "printmoves") {
+				board->printMoves();
+			} else if (input == "setpos") {
+				string fen = "8/Rp1k1p1p/1p6/1P2p3/8/4P3/1PnP1PrP/2B1K1NR w K - 0 19";
+				board->parseFEN(fen);
 			} else {
 				if (input == "reset") {
 					board->setStartingPos();
@@ -64,7 +69,6 @@ int main() {
 				}
 				board->genMoves(true);
 				board->print(white);
-				board->printMoves();
 			}
 		}
 

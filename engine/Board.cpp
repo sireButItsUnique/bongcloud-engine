@@ -234,6 +234,102 @@ void Board::print(bool c) {
 	cout << "Black " << (blackQueenCastle ? "can" : "cannot") << " castle queenside\n";
 }
 
+#include "Board.hpp" // Assuming this includes necessary headers
+#include <iostream>
+#include <sstream>
+#include <string>
+
+void Board::parseFEN(string &fen) {
+	std::istringstream iss(fen);
+	std::string token;
+
+	// Board state
+	std::string boardState;
+	iss >> boardState;
+
+	// Piece positions
+	unsigned long long pieceBoards[12] = {0};
+	int square = 63; // Start from the top-left corner (A8)
+	for (char c : boardState) {
+		if (c == '/') {
+			// square -= 8;
+		} else if (isdigit(c)) {
+			square -= (c - '0');
+		} else {
+			// Convert FEN character to piece type
+			int pieceType;
+			switch (c) {
+			case 'p':
+				pieceType = pawnBlack;
+				break;
+			case 'P':
+				pieceType = pawnWhite;
+				break;
+			case 'n':
+				pieceType = knightBlack;
+				break;
+			case 'N':
+				pieceType = knightWhite;
+				break;
+			case 'b':
+				pieceType = bishopBlack;
+				break;
+			case 'B':
+				pieceType = bishopWhite;
+				break;
+			case 'r':
+				pieceType = rookBlack;
+				break;
+			case 'R':
+				pieceType = rookWhite;
+				break;
+			case 'q':
+				pieceType = queenBlack;
+				break;
+			case 'Q':
+				pieceType = queenWhite;
+				break;
+			case 'k':
+				pieceType = kingBlack;
+				break;
+			case 'K':
+				pieceType = kingWhite;
+				break;
+			}
+			pieceBoards[pieceType] |= (1ULL << square); // Set the bit for the piece on the board
+			colorBoards[pieceType % 2] |= (1ULL << square);
+			square--;
+		}
+	}
+
+	// Turn
+	iss >> token;
+	turn = (token == "b"); // Black to move if the second part of FEN is 'b'
+
+	// Castling rights
+	iss >> token;
+	whiteKingCastle = token.find('K') != std::string::npos;
+	whiteQueenCastle = token.find('Q') != std::string::npos;
+	blackKingCastle = token.find('k') != std::string::npos;
+	blackQueenCastle = token.find('q') != std::string::npos;
+
+	// En passant square
+	iss >> token;
+	// Ignore this for now
+
+	// Halfmove clock and Fullmove number
+	iss >> token;
+	// Ignore this for now
+
+	// Set the board state
+	for (int i = 0; i < 12; ++i) {
+		pieceBoards[i] &= 0xFFFFFFFFFFFFFFFF; // Make sure only first 64 bits are set
+		this->pieceBoards[i] = pieceBoards[i];
+	}
+	genAttackBoard(white);
+	genAttackBoard(black);
+}
+
 void Board::printMoves() {
 
 	cout << BOLD << "Pseudolegal Moves:\n" << UNBOLD;

@@ -73,6 +73,12 @@ public:
 	bool inCheck(bool);
 
 	/**
+	 * @brief sets the board position to the fen string provided
+	 *
+	 */
+	void parseFEN(string &);
+
+	/**
 	 * @brief debug only, prints the board
 	 *
 	 * @param color color of perspective, white = false; black = true

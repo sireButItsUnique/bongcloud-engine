@@ -199,11 +199,6 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 	double beta = DOUBLE_INF;
 	for (Move &move : board->moves) {
 
-		// dont play if it mates itself
-		if (!move.isLegal(board)) {
-			continue;
-		}
-
 		Board *newBoard = new Board(*board);
 		newBoard->movePiece(move.from(), move.to());
 		// make it good for black
