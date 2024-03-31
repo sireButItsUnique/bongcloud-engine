@@ -234,11 +234,6 @@ void Board::print(bool c) {
 	cout << "Black " << (blackQueenCastle ? "can" : "cannot") << " castle queenside\n";
 }
 
-#include "Board.hpp" // Assuming this includes necessary headers
-#include <iostream>
-#include <sstream>
-#include <string>
-
 void Board::parseFEN(string &fen) {
 	std::istringstream iss(fen);
 	std::string token;
@@ -248,7 +243,11 @@ void Board::parseFEN(string &fen) {
 	iss >> boardState;
 
 	// Piece positions
-	unsigned long long pieceBoards[12] = {0};
+	for (int i = 0; i < 12; i++) {
+		pieceBoards[i] = 0;
+	}
+	colorBoards[white] = 0;
+	colorBoards[black] = 0;
 	int square = 63; // Start from the top-left corner (A8)
 	for (char c : boardState) {
 		if (c == '/') {
@@ -321,11 +320,7 @@ void Board::parseFEN(string &fen) {
 	iss >> token;
 	// Ignore this for now
 
-	// Set the board state
-	for (int i = 0; i < 12; ++i) {
-		pieceBoards[i] &= 0xFFFFFFFFFFFFFFFF; // Make sure only first 64 bits are set
-		this->pieceBoards[i] = pieceBoards[i];
-	}
+	// Set the attack board states
 	genAttackBoard(white);
 	genAttackBoard(black);
 }
@@ -342,4 +337,36 @@ void Board::printMoves() {
 		}
 	}
 	cout << endl;
+}
+
+void Board::printBoard(bool c) {
+	int idx = 0;
+	int sqr = 0;
+	cout << BOLD << "Board:\n" << UNBOLD;
+	for (int square = 63 * (!c); (c ? square < 64 : square >= 0); (c ? square++ : square--)) {
+
+		// check if there's a piece
+		cout << ((sqr % 2) ? "\x1B[100m" : "\x1B[107m");
+		bool found = false;
+		for (int i = 0; i < 12; i++) {
+			if (pieceBoards[i] & (1ULL << square)) {
+				cout << ((enumToChar[i] - 'z' > 0) ? "\x1B[34m" : "\x1B[36m") << BOLD;
+				cout << enumToChar[i];
+				cout << ' ';
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			cout << "  ";
+		}
+		cout << UNCOLOR;
+
+		if (idx % 8 == 7) {
+			cout << '\n';
+			sqr++;
+		}
+		idx++;
+		sqr++;
+	}
 }

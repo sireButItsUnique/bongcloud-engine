@@ -56,9 +56,12 @@ int main() {
 			} else if (input == "print") {
 				board->print(white);
 			} else if (input == "printmoves") {
+				board->genMoves();
 				board->printMoves();
+				cout << board->colorBoards[white] << " " << board->colorBoards[black] << endl;
 			} else if (input == "setpos") {
-				string fen = "8/Rp1k1p1p/1p6/1P2p3/8/4P3/1PnP1PrP/2B1K1NR w K - 0 19";
+				// analyze this game K4b2/3P4/8/8/8/P7/8/7k b - - 0 1
+				string fen = "K4b2/3P4/8/8/8/P7/8/7k w - - 0 1";
 				board->parseFEN(fen);
 			} else {
 				if (input == "reset") {

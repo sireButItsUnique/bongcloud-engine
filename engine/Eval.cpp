@@ -66,7 +66,7 @@ double Eval::finishCaptures(Board *board, double eval, double alpha, double beta
 		// contains capture
 		if (board->colorBoards[!board->turn] & (1ULL << board->moves[i].to())) {
 			Board *newBoard = new Board(*board);
-			newBoard->movePiece(board->moves[i].from(), board->moves[i].to());
+			newBoard->movePiece(&board->moves[i]);
 			moves.push_back({getBoardEval(newBoard), newBoard});
 		}
 	}
@@ -137,7 +137,7 @@ double Eval::getBoardEvalRec(Board *board, int ply, double alpha, double beta, i
 	vector<pair<double, Board *>> moves(board->moves.size());
 	for (int i = 0; i < board->moves.size(); i++) {
 		Board *newBoard = new Board(*board);
-		newBoard->movePiece(board->moves[i].from(), board->moves[i].to());
+		newBoard->movePiece(&board->moves[i]);
 		moves[i] = {getBoardEval(newBoard), newBoard};
 	}
 	sort(moves.begin(), moves.end());
@@ -200,7 +200,7 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 	for (Move &move : board->moves) {
 
 		Board *newBoard = new Board(*board);
-		newBoard->movePiece(move.from(), move.to());
+		newBoard->movePiece(&move);
 		// make it good for black
 		if (board->turn) {
 

@@ -86,6 +86,13 @@ public:
 	void print(bool = white);
 
 	/**
+	 * @brief debug only, prints the board only without metadata
+	 *
+	 * @param color color of perspective, white = false; black = true
+	 */
+	void printBoard(bool = white);
+
+	/**
 	 * @brief debug only, prints the legal moves of the current position
 	 *
 	 */
