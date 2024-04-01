@@ -61,7 +61,7 @@ int main() {
 				cout << board->colorBoards[white] << " " << board->colorBoards[black] << endl;
 			} else if (input == "setpos") {
 				// analyze this game K4b2/3P4/8/8/8/P7/8/7k b - - 0 1
-				string fen = "K4b2/3P4/8/8/8/P7/8/7k w - - 0 1";
+				string fen = "k6Q/pp6/q2r4/8/8/8/6NN/6NK b - - 0 1";
 				board->parseFEN(fen);
 			} else {
 				if (input == "reset") {

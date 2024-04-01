@@ -4,6 +4,11 @@
 
 class Eval {
 public:
+	/**
+	 * @brief lookup[zorbistKey] = {ply, eval}
+	 *
+	 */
+	unordered_map<unsigned ll, pair<int, double>> lookup;
 	Eval();
 
 	/**

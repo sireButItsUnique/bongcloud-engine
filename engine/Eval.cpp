@@ -201,6 +201,14 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 
 		Board *newBoard = new Board(*board);
 		newBoard->movePiece(&move);
+
+		// dont play if its illegal
+		if (newBoard->inCheck(!newBoard->turn)) {
+			newBoard->printBoard();
+			cout << newBoard->attackBoards[newBoard->turn] << endl;
+			continue;
+		}
+
 		// make it good for black
 		if (board->turn) {
 
