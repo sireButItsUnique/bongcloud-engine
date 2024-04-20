@@ -64,6 +64,45 @@ public:
 	void genMoves(bool = false);
 
 	/**
+	 * @brief generates a 64 bit zorbist key for the current board
+	 *
+	 * @return unsigned ll
+	 */
+	unsigned ll genZorbist() {
+		unsigned ll key = 0;
+
+		// do all the pieces
+		for (int i = 0; i < 12; i++) {
+			unsigned ll cur = pieceBoards[i];
+			while (cur) {
+				uint8_t pos = _tzcnt_u64(cur);
+				key ^= zPiece[i][pos];
+				cur &= ~(1ULL << pos);
+			}
+		}
+
+		// do castling
+		if (whiteKingCastle) {
+			key ^= zCastle[0];
+		}
+		if (whiteQueenCastle) {
+			key ^= zCastle[1];
+		}
+		if (blackKingCastle) {
+			key ^= zCastle[2];
+		}
+		if (blackQueenCastle) {
+			key ^= zCastle[3];
+		}
+
+		// do turn
+		if (turn) {
+			key ^= zTurn;
+		}
+		return key;
+	}
+
+	/**
 	 * @brief returns whether or not the color is currently in check
 	 *
 	 * @param color white = false; black = true

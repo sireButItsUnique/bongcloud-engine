@@ -115,6 +115,14 @@ double Eval::finishCaptures(Board *board, double eval, double alpha, double beta
 
 double Eval::getBoardEvalRec(Board *board, int ply, double alpha, double beta, int &evaluated) {
 
+	// check lookup
+	unsigned ll key = board->genZorbist();
+	if (lookup.find(key) != lookup.end()) {
+		if (lookup[key].first >= ply) {
+			return lookup[key].second;
+		}
+	}
+
 	// return heurestic eval
 	evaluated++;
 	if (ply <= 0) {
@@ -180,6 +188,8 @@ double Eval::getBoardEvalRec(Board *board, int ply, double alpha, double beta, i
 			alpha = max(alpha, eval);
 		}
 	}
+
+	lookup[key] = {ply, eval};
 	return eval;
 }
 
@@ -204,8 +214,6 @@ Move Eval::getBestMove(Board *board, int ply, double &eval, int &evaluated, bool
 
 		// dont play if its illegal
 		if (newBoard->inCheck(!newBoard->turn)) {
-			newBoard->printBoard();
-			cout << newBoard->attackBoards[newBoard->turn] << endl;
 			continue;
 		}
 

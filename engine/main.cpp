@@ -23,7 +23,7 @@ int main() {
 			cin >> move;
 			board->movePiece(move);
 		} else if (input == "lichesseval") {
-			int tmp, ply = 4;
+			int tmp, ply = 5;
 			double eval;
 			Move bestMove = evaluator->getBestMove(board, ply, eval, tmp);
 			if (bestMove.from() == 16 && bestMove.to() == 16) {
